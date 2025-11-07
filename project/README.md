@@ -33,6 +33,13 @@ Welcome to the Keyston project documentation! This folder contains comprehensive
    - Pros and cons analysis
    - Final recommendations with justifications
 
+5. **[DEVELOPMENT_ROADMAP.md](./DEVELOPMENT_ROADMAP.md)** - Sprint Plan & Implementation Schedule
+   - Detailed 14-week sprint breakdown
+   - Task lists for each sprint
+   - Definition of Done criteria
+   - Risk mitigation schedule
+   - Team ceremonies and tracking metrics
+
 ## 🎯 Project Goals
 
 Keyston is a comprehensive fitness and health mobile application with three core features:
@@ -139,6 +146,9 @@ Focus on UI mockups in **FEATURE_SPECIFICATIONS.md** and user flows throughout t
 ### For Stakeholders
 Begin with the Executive Summary in **MVP_PROPOSAL.md**, then review success metrics and timeline.
 
+### For Project Managers
+Review **DEVELOPMENT_ROADMAP.md** for detailed sprint planning and execution schedule, then coordinate with **MVP_PROPOSAL.md** for overall timeline.
+
 ## 📝 Document Status
 
 | Document | Version | Status | Last Updated |
@@ -147,6 +157,7 @@ Begin with the Executive Summary in **MVP_PROPOSAL.md**, then review success met
 | ARCHITECTURE.md | 1.0 | Draft | Nov 2025 |
 | FEATURE_SPECIFICATIONS.md | 1.0 | Draft | Nov 2025 |
 | TECHNOLOGY_STACK.md | 1.0 | Draft | Nov 2025 |
+| DEVELOPMENT_ROADMAP.md | 1.0 | Draft | Nov 2025 |
 
 ## 🤝 Contributing
 
