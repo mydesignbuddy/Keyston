@@ -748,217 +748,99 @@ async function restoreFromGoogleDrive() {
 - No server-side CRUD operations
 - All operations are local IndexedDB transactions
 - External API calls made directly from client
-POST   /api/v1/foods/favorites
-DELETE /api/v1/foods/favorites/:id
-GET    /api/v1/foods/recent
-```
-
-#### Workout Tracking
-```
-GET    /api/v1/workouts?start=YYYY-MM-DD&end=YYYY-MM-DD
-POST   /api/v1/workouts
-PUT    /api/v1/workouts/:id
-DELETE /api/v1/workouts/:id
-GET    /api/v1/workouts/:id
-
-GET    /api/v1/workouts/presets
-POST   /api/v1/workouts/presets
-PUT    /api/v1/workouts/presets/:id
-DELETE /api/v1/workouts/presets/:id
-GET    /api/v1/workouts/stats
-```
-
-### 5.2 API Request/Response Examples
-
-#### Search Foods
-```http
-GET /api/v1/foods/search?q=chicken%20breast&limit=10
-
-Response 200 OK:
-{
-  "data": [
-    {
-      "id": "uuid-1",
-      "name": "Chicken Breast, Skinless",
-      "brand": "Generic",
-      "servingSize": 100,
-      "servingUnit": "g",
-      "nutrition": {
-        "calories": 165,
-        "protein": 31,
-        "carbs": 0,
-        "fat": 3.6,
-        "fiber": 0,
-        "sugar": 0,
-        "sodium": 74
-      },
-      "dataSource": "USDA"
-    }
-  ],
-  "pagination": {
-    "total": 45,
-    "limit": 10,
-    "offset": 0
-  }
-}
-```
-
-#### Add Food Diary Entry
-```http
-POST /api/v1/diary/entries
-
-Request Body:
-{
-  "foodId": "uuid-1",
-  "entryDate": "2025-11-07",
-  "mealType": "lunch",
-  "servingSize": 150,
-  "servingUnit": "g"
-}
-
-Response 201 Created:
-{
-  "data": {
-    "id": "entry-uuid",
-    "userId": "user-uuid",
-    "foodId": "uuid-1",
-    "entryDate": "2025-11-07",
-    "mealType": "lunch",
-    "servingSize": 150,
-    "servingUnit": "g",
-    "nutrition": {
-      "calories": 247.5,
-      "protein": 46.5,
-      "carbs": 0,
-      "fat": 5.4
-    },
-    "createdAt": "2025-11-07T12:34:56Z"
-  }
-}
-```
 
 ---
 
-## 6. Security Architecture
+## 6. Security & Privacy Architecture
 
-### 6.1 Authentication & Authorization
+### 6.1 Privacy-First Design
 
-**Authentication Method**: JWT (JSON Web Tokens)
-- **Access Token**: Short-lived (15 minutes)
-- **Refresh Token**: Long-lived (7 days), stored securely
-- **Token Storage**: Secure storage (Keychain/Keystore on mobile)
+**Core Privacy Principles**:
+- **No User Accounts**: No registration, login, or authentication system
+- **No Data Collection**: Zero telemetry, analytics, or tracking
+- **Local Data Only**: All user data stored exclusively on their device
+- **User Controlled Sync**: Optional Google Drive backup controlled by user
+- **No Third-Party Services**: Only nutrition APIs accessed (USDA, Open Food Facts)
 
-**Authorization**: Role-Based Access Control (RBAC)
-- Roles: User, Premium User (future), Admin
-- Permissions enforced at API endpoint level
+### 6.2 Data Protection
 
-### 6.2 Security Measures
+**Local Data Security**:
+- IndexedDB storage protected by browser/OS security
+- Data encrypted when backed up to Google Drive
+- No transmission of personal data to external servers
+- User can export/delete all data anytime
 
-```mermaid
-graph TD
-    A[Security Layers]
-    
-    A --> B[Transport Security]
-    B --> B1[TLS 1.3]
-    B --> B2[Certificate Pinning]
-    
-    A --> C[Authentication]
-    C --> C1[JWT Tokens]
-    C --> C2[Secure Password Hashing - bcrypt]
-    C --> C3[2FA Support - Future]
-    
-    A --> D[Data Protection]
-    D --> D1[Encryption at Rest]
-    D --> D2[Encryption in Transit]
-    D --> D3[PII Encryption]
-    
-    A --> E[API Security]
-    E --> E1[Rate Limiting]
-    E --> E2[Input Validation]
-    E --> E3[SQL Injection Prevention]
-    E --> E4[XSS Protection]
-    
-    A --> F[Compliance]
-    F --> F1[GDPR]
-    F --> F2[CCPA]
-    F --> F3[HIPAA Considerations]
-```
+**API Security**:
+- Nutrition API calls use HTTPS
+- API keys stored securely (environment variables, not in code)
+- Rate limiting handled client-side to prevent abuse
+- No proxy server - direct API calls from client
 
-### 6.3 Data Privacy
+**Google Drive Integration**:
+- OAuth 2.0 authentication (user grants permission)
+- Data encrypted before upload
+- User can revoke access anytime
+- Backup files stored in user's private Drive folder
 
-- **Minimal Data Collection**: Only collect necessary user data
-- **Data Anonymization**: Analytics data anonymized
-- **User Rights**: Data export, deletion on request
-- **Privacy Policy**: Clear disclosure of data usage
-- **Third-Party Sharing**: No sharing without explicit consent
+### 6.3 Compliance
 
-### 6.4 Security Best Practices
+**GDPR/CCPA Compliance**:
+- ✅ No personal data collected by app developer
+- ✅ User has full control over their data
+- ✅ Right to access: User has direct access to all data (it's on their device)
+- ✅ Right to deletion: User can delete local data anytime
+- ✅ Right to portability: Export to JSON/CSV supported
+- ✅ No cookies or tracking
 
-1. **Input Validation**: All user inputs validated and sanitized
-2. **Prepared Statements**: Prevent SQL injection
-3. **Rate Limiting**: Prevent brute force attacks (10 requests/minute per user)
-4. **Secrets Management**: Environment variables, never in code
-5. **Dependency Scanning**: Regular updates for security patches
-6. **Logging**: Security events logged (without sensitive data)
-7. **Error Handling**: Generic error messages to users
+**Privacy Policy**:
+- Simple, clear language
+- States: "We do not collect, store, or access your data"
+- Explains optional Google Drive integration
+- Lists nutrition APIs accessed (USDA, Open Food Facts)
 
 ---
 
-## 7. Scalability & Performance
+## 7. Performance & Scalability
 
 ### 7.1 Performance Targets
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| API Response Time (p95) | < 500ms | Server-side |
-| App Launch Time | < 3s | Cold start |
-| Search Results | < 2s | End-to-end |
-| Database Query Time | < 100ms | Server-side |
-| Image Upload | < 5s | For 5MB file |
-| Offline Sync | < 30s | For 100 entries |
+| Metric | Target | Notes |
+|--------|--------|-------|
+| App Launch Time | < 2s | Cold start on modern devices |
+| IndexedDB Query Time | < 100ms | For typical queries |
+| Food Search | < 2s | Including API call to USDA/OFF |
+| UI Interaction | < 16ms | 60fps animations |
+| Offline Functionality | 100% | All features work offline |
 
-### 7.2 Scaling Strategy
+### 7.2 Optimization Strategies
 
-#### Horizontal Scaling
-- **Application Tier**: Auto-scaling based on CPU/memory
-- **Database**: Read replicas for query distribution
-- **Cache**: Redis cluster for high availability
+**Client-Side Optimization**:
+- Lazy loading of pages (Ionic router)
+- Virtual scrolling for large lists
+- IndexedDB indexes on frequently queried fields
+- API response caching (24h for search, 7d for nutrition data)
+- Image optimization and compression
+- Code splitting and tree shaking
 
-#### Optimization Techniques
-- **Database Indexing**: Indexes on frequently queried columns
-- **Query Optimization**: N+1 query prevention, batch queries
-- **CDN**: Static assets served via CDN
-- **Image Optimization**: Compression, multiple sizes
-- **Lazy Loading**: Load data on-demand
-- **Pagination**: Limit result sets
+**Storage Management**:
+- IndexedDB quota management (browsers typically allow GBs)
+- Periodic cache cleanup (old API responses)
+- User notifications if approaching storage limits
+- Data export options before cleanup
 
-### 7.3 Monitoring & Observability
+### 7.3 Scalability
 
-```mermaid
-graph LR
-    A[Application] --> B[Metrics]
-    A --> C[Logs]
-    A --> D[Traces]
-    
-    B --> E[CloudWatch/Prometheus]
-    C --> F[ELK/CloudWatch Logs]
-    D --> G[Jaeger/X-Ray]
-    
-    E --> H[Dashboards]
-    F --> H
-    G --> H
-    
-    H --> I[Alerts]
-    I --> J[PagerDuty/Slack]
-```
+**User Scalability**:
+- No server-side scaling needed (no backend!)
+- Each user's data isolated on their device
+- No shared infrastructure
+- Cost doesn't scale with user count
 
-**Key Metrics**:
-- Request rate, error rate, latency (RED method)
-- Database connections, query performance
-- Cache hit ratio
-- API endpoint usage
-- User session duration
-- Feature adoption rates
+**Data Scalability**:
+- IndexedDB can handle 100,000+ entries efficiently
+- Pagination and virtual scrolling for large datasets
+- Background data cleanup options
+- Google Drive backup for long-term storage
 
 ---
 
@@ -966,177 +848,66 @@ graph LR
 
 ### 8.1 Code Standards
 
-**Mobile (React Native/TypeScript)**:
+**Ionic React App (TypeScript)**:
 - ESLint + Prettier for code formatting
-- TypeScript strict mode
+- TypeScript strict mode enabled
 - Component-based architecture
 - React Hooks for state management
-- Redux/Context API for global state
+- Ionic components for UI consistency
 
-**Backend (Node.js/TypeScript)**:
-- ESLint + Prettier
-- TypeScript strict mode
-- Clean Architecture principles
-- Dependency injection
-- Unit test coverage > 80%
+**Best Practices**:
+- Keep components small and focused
+- Use custom hooks for reusable logic
+- Implement error boundaries
+- Follow Ionic design patterns
+- Accessibility-first development
 
 ### 8.2 Git Workflow
 
 ```
-main (production)
+main (production - app store releases)
   └── develop (integration)
-      ├── feature/food-diary
-      ├── feature/food-scanner
-      └── feature/workout-tracker
+      ├── feature/food-diary-enhancements
+      ├── feature/barcode-scanner
+      └── bugfix/chart-rendering
 ```
 
 - **Feature Branches**: `feature/feature-name`
 - **Bug Fixes**: `bugfix/bug-description`
-- **Pull Requests**: Required for all merges
-- **Code Review**: Minimum 1 approval required
-- **CI/CD**: Automated tests on PR
+- **Pull Requests**: Code review before merge
+- **Commits**: Conventional commits format
 
 ### 8.3 Testing Strategy
 
-```mermaid
-graph TB
-    A[Testing Pyramid]
-    
-    A --> B[Unit Tests - 70%]
-    B --> B1[Service Layer]
-    B --> B2[Utility Functions]
-    B --> B3[Components - Isolated]
-    
-    A --> C[Integration Tests - 20%]
-    C --> C1[API Endpoints]
-    C --> C2[Database Operations]
-    C --> C3[Third-Party Integrations]
-    
-    A --> D[E2E Tests - 10%]
-    D --> D1[Critical User Flows]
-    D --> D2[Food Logging Flow]
-    D --> D3[Workout Creation Flow]
-```
+**Unit Tests** (70%):
+- Component logic testing with Jest
+- Service layer testing
+- Utility function testing
+- React Testing Library for components
 
-**Testing Tools**:
-- **Unit**: Jest, React Testing Library
-- **Integration**: Supertest, Testcontainers
-- **E2E**: Detox, Appium
-- **Performance**: Lighthouse, K6
+**Integration Tests** (20%):
+- IndexedDB operations
+- Nutrition API integration
+- Google Drive sync flow
 
-### 8.4 Continuous Integration/Deployment
+**E2E Tests** (10%):
+- Critical user flows with Cypress/Playwright
+- Food logging complete flow
+- Workout creation flow
+- Google Drive backup/restore
 
-```mermaid
-graph LR
-    A[Git Push] --> B[CI Pipeline]
-    B --> C[Lint & Format Check]
-    C --> D[Unit Tests]
-    D --> E[Integration Tests]
-    E --> F[Build]
-    F --> G{Branch?}
-    
-    G -->|develop| H[Deploy to Staging]
-    G -->|main| I[Deploy to Production]
-    
-    H --> J[E2E Tests - Staging]
-    J --> K[Smoke Tests]
-    
-    I --> L[Blue-Green Deployment]
-    L --> M[Health Check]
-    M --> N[Rollback if Failed]
-```
+### 8.4 Privacy Testing Checklist
 
-**Pipeline Stages**:
-1. Code quality checks (linting, formatting)
-2. Unit tests
-3. Integration tests
-4. Build artifacts
-5. Deploy to environment
-6. Run smoke tests
-7. Notify team
+- [ ] Verify no data sent to servers (except nutrition APIs)
+- [ ] Confirm no analytics or tracking code
+- [ ] Test offline functionality (100% of features)
+- [ ] Verify Google Drive encryption
+- [ ] Test data export/import
+- [ ] Review all network requests
+- [ ] Confirm no user identifiers sent anywhere
 
 ---
 
-## 9. Technology Stack - Final Recommendations
-
-### Mobile Application
-- **Framework**: **React Native** (cross-platform, large ecosystem)
-- **Language**: TypeScript
-- **State Management**: Redux Toolkit + RTK Query
-- **Navigation**: React Navigation
-- **Local Database**: WatermelonDB (fast, reactive)
-- **Camera/Scanner**: react-native-camera + react-native-barcode-scanner
-
-### Backend Services
-- **Runtime**: **Node.js** (v18 LTS)
-- **Framework**: **Express.js** with TypeScript
-- **ORM**: Prisma (type-safe, excellent DX)
-- **Validation**: Zod (schema validation)
-- **Authentication**: Passport.js + JWT
-
-### Database & Storage
-- **Primary Database**: **PostgreSQL 15** (robust, ACID compliant)
-- **Cache**: **Redis 7** (in-memory caching)
-- **File Storage**: **AWS S3** or **Google Cloud Storage**
-- **Search**: PostgreSQL Full-Text Search (MVP), Elasticsearch (future)
-
-### DevOps & Infrastructure
-- **Cloud Provider**: **AWS** or **Google Cloud Platform**
-- **Container**: Docker
-- **Orchestration**: AWS ECS or Kubernetes (if needed)
-- **CI/CD**: **GitHub Actions**
-- **Monitoring**: CloudWatch + Sentry
-- **Analytics**: Firebase Analytics or Mixpanel
-
-### External APIs
-- **Primary Nutrition DB**: USDA FoodData Central (free, comprehensive)
-- **Barcode Lookup**: Open Food Facts (free, open source)
-- **Backup Nutrition DB**: Nutritionix API (paid, fallback)
-
----
-
-## 10. Appendices
-
-### 10.1 API Response Codes
-
-| Code | Meaning | Usage |
-|------|---------|-------|
-| 200 | OK | Successful GET, PUT, PATCH |
-| 201 | Created | Successful POST |
-| 204 | No Content | Successful DELETE |
-| 400 | Bad Request | Invalid input |
-| 401 | Unauthorized | Authentication required |
-| 403 | Forbidden | Insufficient permissions |
-| 404 | Not Found | Resource doesn't exist |
-| 409 | Conflict | Duplicate resource |
-| 429 | Too Many Requests | Rate limit exceeded |
-| 500 | Internal Server Error | Server error |
-| 503 | Service Unavailable | Temporary outage |
-
-### 10.2 Environment Configuration
-
-```
-Development:
-- Local database instances
-- Mock external APIs
-- Verbose logging
-- Hot reload enabled
-
-Staging:
-- Cloud-hosted database
-- Real external APIs (test accounts)
-- Standard logging
-- Mirrors production
-
-Production:
-- Highly available database
-- Production API keys
-- Error-level logging only
-- Auto-scaling enabled
-```
-
----
-
-*Document Version: 1.0*  
+*Document Version: 2.0 - Privacy-First Architecture*  
 *Last Updated: November 2025*  
-*Status: Draft for Review*
+*Status: Complete*
