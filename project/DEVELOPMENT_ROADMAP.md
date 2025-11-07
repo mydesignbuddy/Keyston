@@ -20,58 +20,43 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
 
 **Goal**: Establish development environment and architecture foundation
 
-#### Backend Tasks
-- [ ] Initialize Node.js + Express + TypeScript project
-  - Set up ESLint, Prettier, Git hooks
-  - Configure TypeScript strict mode
-  - Set up folder structure
-- [ ] Set up PostgreSQL database
-  - Create database instances (dev, test)
-  - Initialize Prisma ORM
-  - Create initial schema
-- [ ] Set up Redis for caching
-- [ ] Implement authentication system
-  - JWT token generation and validation
-  - Password hashing with bcrypt
-  - Refresh token rotation
-- [ ] Create basic user endpoints
-  - POST /auth/register
-  - POST /auth/login
-  - POST /auth/refresh
-  - GET /users/me
-- [ ] Set up CI/CD pipeline
-  - GitHub Actions for linting and tests
-  - Automated test runs on PR
-- [ ] Configure environment variables
-  - Development, staging, production configs
-  - Secrets management
-
-#### Mobile Tasks
-- [ ] Initialize React Native project
-  - TypeScript configuration
+#### Mobile Setup
+- [ ] Initialize Ionic + React project
+  - Create Ionic React app with TypeScript
   - ESLint + Prettier setup
   - Folder structure setup
+  - Configure Capacitor for native features
 - [ ] Set up navigation
-  - React Navigation installation
-  - Bottom tab navigator structure
-  - Stack navigators for each feature
-- [ ] Set up Redux Toolkit
-  - Store configuration
-  - RTK Query API slice setup
-  - DevTools integration
-- [ ] Set up WatermelonDB
-  - Schema definitions
-  - Model setup
-  - Sync adapter configuration
+  - Ionic Router configuration
+  - Tab navigation structure
+  - Page routing setup
+- [ ] Set up State Management
+  - React Context setup (or Redux if complexity warrants)
+  - Local state management patterns
+- [ ] Set up IndexedDB
+  - Install Dexie.js or similar IndexedDB wrapper
+  - Define database schema
+  - Create data access layer
 - [ ] Create design system
   - Color palette
   - Typography scale
-  - Common components (Button, Input, Card)
+  - Ionic component customization
   - Theme provider (light/dark mode support)
-- [ ] Implement authentication screens
-  - Login screen
-  - Register screen
-  - Authentication state management
+- [ ] Set up Capacitor plugins
+  - Camera plugin for barcode scanning
+  - Google Drive plugin for backup
+  - File system plugin
+
+#### API Integration Setup
+- [ ] Set up nutrition API accounts
+  - USDA FoodData Central API key
+  - Test USDA API from client
+  - Test Open Food Facts API
+- [ ] Create API client layer
+  - USDA API wrapper
+  - Open Food Facts API wrapper
+  - Error handling
+  - Client-side caching strategy
 
 #### Design Tasks
 - [ ] Create comprehensive UI/UX mockups
@@ -88,11 +73,12 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
   - Typography selection
 
 **Sprint 0 Deliverables**:
-- ✅ Fully configured development environment
-- ✅ Authentication working end-to-end
+- ✅ Fully configured Ionic + React development environment
+- ✅ IndexedDB schema and data layer working
 - ✅ Basic navigation structure
 - ✅ Design system and mockups
-- ✅ CI/CD pipeline operational
+- ✅ Capacitor plugins configured
+- ✅ Nutrition API integration tested
 
 ---
 
@@ -143,70 +129,55 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
 
 **Goal**: Implement basic food diary functionality
 
-#### Backend Tasks
-- [ ] Create food diary schema
-  - Foods table
-  - FoodDiaryEntries table
-  - Migrations
-- [ ] Implement food diary endpoints
-  - GET /diary/entries?date=YYYY-MM-DD
-  - POST /diary/entries
-  - PUT /diary/entries/:id
-  - DELETE /diary/entries/:id
-- [ ] Create nutrition calculation service
+#### Data Layer Tasks
+- [ ] Implement IndexedDB food diary schema
+  - food_diary_entries object store
+  - foods object store (cached data)
+  - Indexes for queries
+- [ ] Create food diary service
+  - Add/edit/delete diary entries
+  - Get entries by date
+  - Calculate daily totals
   - Portion size adjustments
   - Nutrient aggregation
-- [ ] Implement daily summary endpoint
-  - GET /diary/summary?date=YYYY-MM-DD
-  - Calculate totals and percentages
-- [ ] Add input validation
-  - Zod schemas for all endpoints
-- [ ] Write unit tests
-  - Service layer tests
-  - Controller tests
-  - 80%+ coverage
+- [ ] Implement data validation
+  - Input validation functions
+  - Data integrity checks
 
-#### Mobile Tasks
-- [ ] Create local database schema
-  - User preferences
-  - Food diary entries (offline storage)
-  - Sync queue
-- [ ] Implement food diary screens
-  - Daily diary view
+#### UI Tasks
+- [ ] Implement food diary pages
+  - Daily diary view with Ionic components
   - Meal sections (breakfast, lunch, dinner, snacks)
   - Entry cards with nutrition display
-- [ ] Build add food screen
+- [ ] Build add food page
   - Meal type selector
   - Portion size input
   - Nutrition preview
 - [ ] Implement edit/delete functionality
   - Edit entry modal
-  - Swipe to delete
+  - Swipe to delete (Ionic sliding items)
   - Confirmation dialogs
 - [ ] Create daily summary component
   - Calorie progress bar
-  - Macro breakdown chart (pie/donut)
+  - Macro breakdown chart (Chart.js or similar)
   - Daily totals display
-- [ ] Set up Redux slices
-  - Food diary state management
-  - API integration with RTK Query
-- [ ] Implement offline-first sync
-  - Queue changes when offline
-  - Sync when online
-  - Conflict resolution
+- [ ] Set up state management
+  - Food diary context or Redux slice
+  - Local state updates (instant)
 
 #### QA Tasks
 - [ ] Create test plan for food diary
-- [ ] Manual testing on iOS
-- [ ] Manual testing on Android
-- [ ] Edge case testing (large portions, negative values, etc.)
-- [ ] Performance testing (large diary entries)
+- [ ] Manual testing on iOS (via Capacitor)
+- [ ] Manual testing on Android (via Capacitor)
+- [ ] Test as PWA in browser
+- [ ] Edge case testing (large portions, zero values, etc.)
+- [ ] Performance testing (100+ diary entries)
 
 **Sprint 1 Deliverables**:
 - ✅ Users can add, edit, delete food entries
 - ✅ Daily summary calculates correctly
-- ✅ Data persists offline and syncs online
-- ✅ All tests passing
+- ✅ Data persists in IndexedDB
+- ✅ Works completely offline
 - ✅ Working demo on real devices
 
 ---
@@ -215,49 +186,44 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
 
 **Goal**: Add weekly trends and goal setting
 
-#### Backend Tasks
-- [ ] Implement weekly summary endpoint
-  - GET /diary/summary?start=YYYY-MM-DD&end=YYYY-MM-DD
-  - Aggregate data across date range
-  - Calculate averages and trends
-- [ ] Create user goals endpoints
-  - PUT /users/me/goals
-  - Daily calorie goal
-  - Macro targets
-- [ ] Optimize database queries
-  - Add indexes for common queries
-  - Implement query result caching
-- [ ] Add data export endpoint
-  - GET /diary/export?format=csv&start=&end=
-  - Generate CSV of diary entries
+#### Data Layer Tasks
+- [ ] Implement weekly aggregation queries
+  - Query entries across date range
+  - Calculate daily and weekly averages
+  - Identify patterns
+- [ ] Create data export functionality
+  - Export to CSV format
+  - Export to JSON backup
+  - Use File System Capacitor plugin for saving
 
-#### Mobile Tasks
-- [ ] Implement weekly trends screen
-  - Line chart of daily calories
+#### UI Tasks
+- [ ] Implement weekly trends page
+  - Line chart of daily calories (Chart.js)
   - Average macro percentages
   - Identify patterns (over/under goal days)
-- [ ] Create goal setting screen
+- [ ] Create goal setting page
   - Daily calorie goal input
   - Macro target configuration
-  - Save goals functionality
+  - Save to user_settings in IndexedDB
 - [ ] Add calendar date picker
+  - Ionic datetime component
   - View any past date
   - Navigate to specific date
 - [ ] Implement data visualization
-  - Charts library integration (react-native-chart-kit or Victory)
+  - Charts library integration (Chart.js for web compatibility)
   - Calorie trend chart
   - Macro distribution pie chart
 - [ ] Polish UI/UX
   - Loading states
   - Empty states
   - Error states
-  - Animations and transitions
+  - Ionic animations
 
 #### QA Tasks
 - [ ] Test weekly trends calculations
 - [ ] Test goal setting and updates
 - [ ] Test chart rendering on various screen sizes
-- [ ] Performance testing with large datasets
+- [ ] Performance testing with 1000+ entries
 - [ ] Regression testing of Sprint 1 features
 
 **Sprint 2 Deliverables**:
@@ -273,46 +239,38 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
 
 ### Sprint 3: Food Search (Week 7-8)
 
-**Goal**: Implement food search with multiple nutrition databases
+**Goal**: Implement food search with multiple nutrition databases (client-side)
 
-#### Backend Tasks
-- [ ] Create nutrition service abstraction
-  - Interface for multiple data sources
-  - Unified food data model
-- [ ] Implement USDA API integration
-  - Search endpoint wrapper
+#### API Integration Tasks (Client-Side)
+- [ ] Create nutrition API client services
+  - USDA API client (direct fetch from browser)
+  - Open Food Facts API client
+  - Unified food data model/interface
   - Response transformation
   - Error handling
-  - Rate limit management
-- [ ] Implement Open Food Facts integration
-  - Search endpoint wrapper
-  - Barcode lookup endpoint
-  - Data normalization
-- [ ] Create search aggregation service
+  - Client-side rate limit management
+- [ ] Implement search aggregation
   - Query multiple sources in parallel
   - Merge and rank results
   - Deduplicate entries
-- [ ] Implement caching strategy
-  - Redis cache for search results (24h TTL)
+- [ ] Implement IndexedDB caching strategy
+  - Cache search results in api_cache (24h TTL)
   - Cache nutrition data (7 day TTL)
-- [ ] Create food search endpoint
-  - GET /foods/search?q=query&limit=20
-  - Pagination support
-  - Source attribution
+  - Check cache before API calls
 - [ ] Implement favorites system
-  - FavoriteFoods table
-  - GET/POST/DELETE /foods/favorites
+  - favorite_foods object store
+  - Add/remove favorites
   - Track usage count
 
-#### Mobile Tasks
-- [ ] Create food search screen
-  - Search input with debounce
+#### UI Tasks
+- [ ] Create food search page
+  - Ionic search bar with debounce
   - Autocomplete suggestions
   - Loading indicators
 - [ ] Build search results list
-  - Food cards with nutrition preview
+  - Ionic cards with nutrition preview
   - Source badges (USDA, Open Food Facts)
-  - Infinite scroll/pagination
+  - Infinite scroll/virtual scrolling
 - [ ] Implement search result selection
   - Navigate to portion selector
   - Add to diary flow
@@ -321,7 +279,7 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
   - Quick add from favorites
   - Remove from favorites
 - [ ] Implement recent foods
-  - Show last 20 logged foods
+  - Show last 20 logged foods from diary
   - Quick re-add functionality
 - [ ] Add search filters (nice-to-have)
   - Filter by data source
@@ -330,18 +288,20 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
 #### QA Tasks
 - [ ] Test search with various queries
 - [ ] Test API error handling
-  - Network failures
+  - Network failures (offline mode)
   - API timeouts
   - Invalid responses
+  - CORS issues
 - [ ] Test caching behavior
 - [ ] Test favorites functionality
-- [ ] Cross-platform testing
+- [ ] Cross-platform testing (iOS, Android, Web)
 
 **Sprint 3 Deliverables**:
-- ✅ Food search working with multiple sources
+- ✅ Food search working with multiple sources (client-side)
 - ✅ Results ranked and deduplicated
 - ✅ Favorites system functional
 - ✅ Recent foods displayed
+- ✅ Works offline with cached data
 - ✅ Robust error handling
 
 ---
