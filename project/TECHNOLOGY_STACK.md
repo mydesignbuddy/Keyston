@@ -6,270 +6,180 @@
 
 ## Table of Contents
 1. [Mobile Framework Comparison](#1-mobile-framework-comparison)
-2. [Backend Framework Comparison](#2-backend-framework-comparison)
-3. [Database Comparison](#3-database-comparison)
-4. [State Management Comparison](#4-state-management-comparison)
-5. [Nutrition API Comparison](#5-nutrition-api-comparison)
-6. [Final Recommendations](#6-final-recommendations)
+2. [Data Storage & Sync Strategy](#2-data-storage--sync-strategy)
+3. [State Management Comparison](#3-state-management-comparison)
+4. [Nutrition API Comparison](#4-nutrition-api-comparison)
+5. [Final Recommendations](#5-final-recommendations---privacy-first-architecture)
 
 ---
 
 ## 1. Mobile Framework Comparison
 
-### Option A: React Native
+### Option A: Ionic Framework + React
+
+**Pros**:
+- ✅ **Web Technology**: Uses standard HTML, CSS, JavaScript/TypeScript
+- ✅ **React Integration**: Leverages existing React knowledge and ecosystem
+- ✅ **Cross-Platform**: Single codebase for iOS, Android, and Web (PWA)
+- ✅ **Web Developer Friendly**: Perfect for developers with web background
+- ✅ **Capacitor**: Native access via Capacitor plugins (camera, storage, etc.)
+- ✅ **UI Components**: Pre-built Ionic components with native look and feel
+- ✅ **Fast Iteration**: Hot reload and familiar web development workflow
+- ✅ **PWA Support**: Can deploy as Progressive Web App
+- ✅ **Easier Debugging**: Use standard browser DevTools
+
+**Cons**:
+- ❌ **Performance**: WebView-based, slightly slower than native
+- ❌ **Animation Performance**: Complex animations may not be as smooth
+- ❌ **App Size**: Can be larger than pure native apps
+- ❌ **Platform Feel**: May not feel 100% native without customization
+
+**Best For**: Web developers transitioning to mobile, cross-platform apps prioritizing development speed
+
+---
+
+### Option B: React Native
 
 **Pros**:
 - ✅ **Large Ecosystem**: Extensive third-party libraries and community support
 - ✅ **Code Reuse**: ~80-90% code sharing between iOS and Android
 - ✅ **Hot Reload**: Fast development iteration with hot/live reload
-- ✅ **JavaScript/TypeScript**: Accessible to web developers
 - ✅ **Performance**: Near-native performance for most use cases
 - ✅ **Mature**: Battle-tested by Facebook, Instagram, Airbnb (initially)
 - ✅ **UI Libraries**: Rich component libraries (React Native Paper, NativeBase)
-- ✅ **Camera Libraries**: Good barcode scanning support
 
 **Cons**:
 - ❌ **Bridge Overhead**: JavaScript-Native bridge can impact performance
-- ❌ **App Size**: Larger app bundle sizes (typically 20-30MB)
+- ❌ **Not Web-Based**: Requires learning React Native-specific APIs
 - ❌ **Platform-Specific Code**: May need native modules for advanced features
 - ❌ **Upgrade Challenges**: Breaking changes between versions
 
-**Best For**: Cross-platform MVP with fast development cycles
+**Best For**: Cross-platform native apps with React experience
 
 ---
 
-### Option B: Flutter
+### Option C: Flutter
 
 **Pros**:
 - ✅ **True Cross-Platform**: Single codebase for iOS, Android, Web, Desktop
 - ✅ **Performance**: Compiled to native ARM code, no bridge
 - ✅ **UI Consistency**: Pixel-perfect UI across platforms
 - ✅ **Hot Reload**: Extremely fast iteration cycles
-- ✅ **Growing Ecosystem**: Rapidly expanding plugin ecosystem
-- ✅ **Google Support**: Backed by Google with strong investment
 - ✅ **Material Design**: Excellent Material Design implementation
-- ✅ **Smaller App Size**: Generally smaller than React Native
 
 **Cons**:
 - ❌ **Dart Language**: Smaller developer pool, less familiar than JavaScript
-- ❌ **Younger Ecosystem**: Fewer mature libraries than React Native
+- ❌ **Not React-based**: Requires learning new framework
 - ❌ **Platform-Specific Features**: Some iOS-specific features lag behind
-- ❌ **App Store Sizes**: Can be larger for simple apps
 
 **Best For**: Performance-critical apps, long-term cross-platform strategy
 
 ---
 
-### Option C: Native (Swift/Kotlin)
-
-**Pros**:
-- ✅ **Best Performance**: Maximum performance and efficiency
-- ✅ **Platform Integration**: Full access to all platform features
-- ✅ **Native UX**: Perfect platform-specific user experience
-- ✅ **Apple/Google Support**: First-class support for new features
-- ✅ **Debugging**: Superior debugging tools and profilers
-- ✅ **App Size**: Smallest possible app size
-
-**Cons**:
-- ❌ **Separate Codebases**: 0% code sharing between platforms
-- ❌ **Development Cost**: Requires iOS and Android developers
-- ❌ **Slower Iteration**: Longer development cycles
-- ❌ **2x Maintenance**: All features built twice
-
-**Best For**: Performance-critical apps with platform-specific requirements
-
----
-
 ### Comparison Matrix
 
-| Feature | React Native | Flutter | Native |
-|---------|--------------|---------|--------|
-| Development Speed | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ |
-| Performance | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Code Sharing | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐ |
-| Developer Availability | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
-| Third-Party Libraries | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Camera/Barcode Support | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| UI Flexibility | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Maintenance Cost | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐ |
-
-### **Recommendation: React Native**
-
-**Justification**:
-- Fastest MVP development
-- Large JavaScript developer pool
-- Excellent barcode scanning libraries
-- Mature ecosystem for health/fitness apps
-- Good balance of performance and development speed
-- Easy to migrate to native later if needed
-
----
-
-## 2. Backend Framework Comparison
-
-### Option A: Node.js + Express
-
-**Pros**:
-- ✅ **JavaScript Everywhere**: Same language as React Native frontend
-- ✅ **NPM Ecosystem**: Largest package ecosystem
-- ✅ **Async I/O**: Excellent for I/O-heavy operations (API calls)
-- ✅ **JSON Native**: Natural JSON handling
-- ✅ **Fast Development**: Quick to build REST APIs
-- ✅ **Microservices**: Easy to scale horizontally
-
-**Cons**:
-- ❌ **CPU Intensive**: Slower for CPU-intensive tasks
-- ❌ **Callback Hell**: Can be complex without async/await
-- ❌ **Type Safety**: Requires TypeScript for type safety
-
-**Best For**: API-heavy applications, real-time features
-
----
-
-### Option B: Python + FastAPI
-
-**Pros**:
-- ✅ **Type Hints**: Native type checking with Pydantic
-- ✅ **Performance**: Faster than Flask/Django for async operations
-- ✅ **Documentation**: Auto-generated OpenAPI docs
-- ✅ **Data Science**: Easy integration with ML libraries (future)
-- ✅ **Clean Syntax**: Readable, maintainable code
-- ✅ **Async Support**: Native async/await
-
-**Cons**:
-- ❌ **Different Language**: Context switching from JavaScript
-- ❌ **Smaller Ecosystem**: Fewer packages than npm
-- ❌ **Deployment**: More complex deployment than Node.js
-
-**Best For**: ML-heavy applications, data processing
-
----
-
-### Option C: Go
-
-**Pros**:
-- ✅ **Performance**: Extremely fast, compiled language
-- ✅ **Concurrency**: Built-in goroutines for parallel processing
-- ✅ **Type Safety**: Statically typed
-- ✅ **Deployment**: Single binary deployment
-- ✅ **Memory Efficient**: Lower memory footprint
-
-**Cons**:
-- ❌ **Learning Curve**: Different paradigm from JavaScript
-- ❌ **Smaller Ecosystem**: Fewer libraries than Node/Python
-- ❌ **Verbose**: More boilerplate code
-
-**Best For**: High-performance microservices, concurrent processing
-
----
-
-### Comparison Matrix
-
-| Feature | Node.js + Express | Python + FastAPI | Go |
-|---------|-------------------|------------------|-----|
-| Development Speed | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
+| Feature | Ionic + React | React Native | Flutter |
+|---------|---------------|--------------|---------|
+| Development Speed | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| Web Developer Friendly | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
 | Performance | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Type Safety | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Language Consistency | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐ |
-| API Development | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| Ecosystem | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| Deployment | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| Code Sharing | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| React Knowledge Reuse | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐ |
+| PWA Support | ⭐⭐⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐ |
+| Camera/Barcode Support | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| UI Flexibility | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| Maintenance Cost | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
 
-### **Recommendation: Node.js + Express + TypeScript**
-
-**Justification**:
-- JavaScript throughout the stack (React Native + Node.js)
-- Fastest MVP development with existing JavaScript knowledge
-- Excellent for API-heavy application (nutrition database calls)
-- Large ecosystem of packages
-- Easy hiring of JavaScript developers
-- TypeScript adds type safety
-
----
-
-## 3. Database Comparison
-
-### Option A: PostgreSQL
-
-**Pros**:
-- ✅ **ACID Compliant**: Full transaction support
-- ✅ **JSON Support**: Native JSON/JSONB for flexible data
-- ✅ **Full-Text Search**: Built-in text search capabilities
-- ✅ **Mature**: Battle-tested, reliable
-- ✅ **Open Source**: Free, community-driven
-- ✅ **Scalability**: Proven at scale
-- ✅ **Data Integrity**: Strong consistency guarantees
-
-**Cons**:
-- ❌ **Schema Migrations**: Requires planning for schema changes
-- ❌ **Vertical Scaling**: Can be expensive to scale vertically
-- ❌ **Complexity**: More complex than NoSQL for simple use cases
-
-**Best For**: Structured data with complex relationships
-
----
-
-### Option B: MongoDB
-
-**Pros**:
-- ✅ **Flexible Schema**: Easy to iterate during development
-- ✅ **JSON Native**: Natural document storage
-- ✅ **Horizontal Scaling**: Built-in sharding
-- ✅ **Developer Friendly**: Intuitive query language
-- ✅ **Fast Reads**: Good read performance
-
-**Cons**:
-- ❌ **Weak Consistency**: Eventually consistent by default
-- ❌ **No Joins**: Requires denormalization or multiple queries
-- ❌ **Memory Hungry**: Higher memory usage
-- ❌ **Transaction Support**: Limited compared to PostgreSQL
-
-**Best For**: Rapidly changing schemas, document-heavy applications
-
----
-
-### Option C: MySQL
-
-**Pros**:
-- ✅ **Widely Used**: Largest market share
-- ✅ **ACID Compliant**: Full transaction support
-- ✅ **Performance**: Excellent read performance
-- ✅ **Mature**: Decades of production use
-
-**Cons**:
-- ❌ **Limited JSON**: Weaker JSON support than PostgreSQL
-- ❌ **Licensing**: Some Oracle licensing concerns
-- ❌ **Less Features**: Fewer advanced features than PostgreSQL
-
-**Best For**: Traditional relational data, read-heavy workloads
-
----
-
-### Comparison Matrix
-
-| Feature | PostgreSQL | MongoDB | MySQL |
-|---------|-----------|---------|-------|
-| Data Integrity | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Flexibility | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
-| JSON Support | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
-| Query Complexity | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ |
-| Scalability | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
-| Performance | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Community | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-
-### **Recommendation: PostgreSQL**
+### **Recommendation: Ionic Framework + React**
 
 **Justification**:
-- Perfect for structured nutrition and workout data
-- Strong relationships (users, diary entries, workouts)
-- JSONB for flexible nutrition data (micronutrients)
-- Excellent full-text search for food lookup
-- Better data integrity for health data
-- Easier migrations than MongoDB for structured data
+- Perfect for web developers with React experience
+- Leverages existing React knowledge and ecosystem
+- Fast development with familiar web technologies
+- Cross-platform deployment (iOS, Android, Web/PWA)
+- Easy debugging with browser DevTools
+- Good Capacitor plugin ecosystem for native features
+- Privacy-friendly: Can work fully offline with local storage
+- No backend required - perfect for privacy-focused app
 
 ---
 
-## 4. State Management Comparison
+## 2. Data Storage & Sync Strategy
+
+**Privacy-First Architecture**: No central backend server or cloud database
+
+### Local Storage Options
+
+#### Option A: IndexedDB + LocalStorage
+
+**Pros**:
+- ✅ **Web Standard**: Native browser API support
+- ✅ **Large Capacity**: Can store GBs of data
+- ✅ **Structured Data**: Query capabilities with IndexedDB
+- ✅ **No Dependencies**: Built into browsers
+- ✅ **Privacy**: All data stays on device
+
+**Cons**:
+- ❌ **API Complexity**: IndexedDB API can be verbose
+- ❌ **Browser Variations**: Some inconsistencies across browsers
+
+**Best For**: Web-based apps with moderate data needs
+
+---
+
+#### Option B: SQLite (via Capacitor)
+
+**Pros**:
+- ✅ **Relational Database**: Full SQL support
+- ✅ **Performance**: Faster than IndexedDB for complex queries
+- ✅ **Mature**: Battle-tested database engine
+- ✅ **Cross-Platform**: Works on iOS, Android, Web
+- ✅ **Privacy**: Local-only storage
+
+**Cons**:
+- ❌ **Plugin Required**: Needs Capacitor SQLite plugin
+- ❌ **Web Limitations**: Falls back to IndexedDB on web
+
+**Best For**: Apps with complex relational data
+
+---
+
+### Sync Strategy
+
+#### Google Drive Integration (via Capacitor)
+
+**Features**:
+- ✅ **User-Controlled**: Users own their data in their Google Drive
+- ✅ **Privacy**: No central database, data encrypted
+- ✅ **Cross-Device**: Sync across user's devices
+- ✅ **Backup**: Automatic backup to cloud storage
+- ✅ **Offline-First**: App works fully offline, syncs when online
+
+**Implementation**:
+- Use Capacitor Google Drive plugin
+- Store encrypted backup files in user's Google Drive
+- Implement conflict resolution for multi-device changes
+- Allow manual or automatic sync
+
+**Future Options**:
+- iCloud Drive for iOS users
+- Dropbox integration
+- OneDrive integration
+- Local file export/import
+
+### **Recommendation: IndexedDB + Google Drive Sync**
+
+**Justification**:
+- No backend infrastructure needed (zero hosting costs)
+- Perfect privacy: data stays with user
+- Works offline by default
+- Familiar web technologies
+- Google Drive widely adopted
+- Can add more sync options later
+
+---
+
+## 3. State Management Comparison
 
 ### Option A: Redux Toolkit
 
@@ -324,19 +234,21 @@
 
 ---
 
-### **Recommendation: Redux Toolkit + RTK Query**
+### **Recommendation: React Context + Hooks (or Redux Toolkit for complex apps)**
 
 **Justification**:
-- Industry standard with excellent documentation
-- RTK Query handles API caching automatically
-- Perfect for offline-first architecture
-- Excellent DevTools for debugging
-- Team scalability and maintainability
-- Built-in solutions for common patterns
+- React Context is sufficient for most privacy-focused local apps
+- No API calls to manage (no need for RTK Query)
+- Simpler architecture with less boilerplate
+- Can upgrade to Redux later if state becomes complex
+- Perfect for offline-first local storage
+- Easier debugging for smaller teams
 
 ---
 
-## 5. Nutrition API Comparison
+## 4. Nutrition API Comparison
+
+**Privacy-First Approach**: Client-side API calls only, no data sent to our servers
 
 ### Option A: USDA FoodData Central
 
@@ -476,78 +388,65 @@ Barcode → Open Food Facts API
 
 ---
 
-## 6. Final Recommendations
+## 5. Final Recommendations - Privacy-First Architecture
 
 ### Complete Technology Stack
 
 ```mermaid
 graph TB
-    subgraph "Mobile Layer"
-        A[React Native + TypeScript]
-        B[Redux Toolkit + RTK Query]
-        C[WatermelonDB - Local Storage]
-        D[React Navigation]
+    subgraph "Mobile App Layer"
+        A[Ionic + React + TypeScript]
+        B[React Context / Redux]
+        C[IndexedDB - Local Storage]
+        D[Ionic Router]
     end
     
-    subgraph "Backend Layer"
-        E[Node.js + Express + TypeScript]
-        F[Prisma ORM]
-        G[JWT Authentication]
+    subgraph "Native Features via Capacitor"
+        E[Camera Plugin]
+        F[Google Drive Plugin]
+        G[File System]
     end
     
-    subgraph "Data Layer"
-        H[(PostgreSQL 15)]
-        I[Redis Cache]
+    subgraph "External Services - Client Side Only"
+        H[USDA FoodData API]
+        I[Open Food Facts API]
     end
     
-    subgraph "External Services"
-        J[USDA FoodData API]
-        K[Open Food Facts API]
-    end
-    
-    subgraph "Infrastructure"
-        L[AWS / GCP]
-        M[GitHub Actions CI/CD]
-        N[CloudWatch / Sentry]
+    subgraph "User's Cloud Storage"
+        J[Google Drive Backup]
+        K[Future: iCloud/Dropbox]
     end
     
     A --> B
     B --> C
     A --> D
-    
     A --> E
-    E --> F
-    F --> H
-    E --> I
-    E --> G
+    A --> F
+    A --> G
     
-    E --> J
-    E --> K
+    A -->|Direct API Calls| H
+    A -->|Direct API Calls| I
     
-    E --> L
-    L --> M
-    L --> N
+    C -->|Encrypted Backup| F
+    F --> J
+    F -.Optional.-> K
 ```
 
 ### Summary Table
 
 | Category | Choice | Justification |
 |----------|--------|---------------|
-| **Mobile Framework** | React Native + TypeScript | Fast MVP, large ecosystem, JavaScript consistency |
-| **Backend** | Node.js + Express + TypeScript | JavaScript full-stack, async I/O, fast development |
-| **Database** | PostgreSQL 15 | Strong relationships, JSONB, data integrity |
-| **Cache** | Redis 7 | API response caching, session management |
-| **State Management** | Redux Toolkit + RTK Query | Industry standard, excellent caching, DevTools |
-| **Local Storage** | WatermelonDB | Reactive, fast, offline-first |
-| **ORM** | Prisma | Type-safe, migrations, excellent DX |
-| **Navigation** | React Navigation | Most popular, fully featured |
-| **Primary Nutrition API** | USDA FoodData Central | Free, verified, comprehensive |
-| **Barcode API** | Open Food Facts | Free, barcode support, large database |
-| **Authentication** | JWT + Passport.js | Stateless, scalable |
-| **Cloud** | AWS or GCP | Scalable, mature, comprehensive services |
-| **CI/CD** | GitHub Actions | Free for public repos, integrated |
-| **Monitoring** | Sentry + CloudWatch | Error tracking + infrastructure monitoring |
-| **Analytics** | Firebase Analytics | Free, comprehensive, mobile-focused |
+| **Mobile Framework** | Ionic + React + TypeScript | Web developer friendly, React expertise, cross-platform |
+| **State Management** | React Context + Hooks | Simple, no API calls to manage, sufficient for local app |
+| **Local Storage** | IndexedDB | Browser standard, large capacity, privacy-friendly |
+| **Sync Solution** | Google Drive via Capacitor | User controls data, privacy-first, no backend needed |
+| **Navigation** | Ionic Router | Integrated with Ionic, familiar to React Router users |
+| **Primary Nutrition API** | USDA FoodData Central | Free, verified, comprehensive, direct client calls |
+| **Barcode API** | Open Food Facts | Free, barcode support, large database, privacy-friendly |
+| **Authentication** | None | Privacy-first, no login required |
+| **Backend Server** | None | Zero backend infrastructure, complete privacy |
+| **Analytics** | None | Privacy-first, no user tracking |
+| **Error Tracking** | Optional Local Logging | Privacy-friendly, no external services |
 
 ### Development Tools
 
@@ -555,11 +454,10 @@ graph TB
 |---------|------|
 | Code Quality | ESLint + Prettier |
 | Testing | Jest + React Testing Library |
-| E2E Testing | Detox |
-| API Testing | Supertest |
-| Documentation | Swagger/OpenAPI |
+| E2E Testing | Cypress or Playwright |
+| Build Tool | Vite or Create React App |
 | Version Control | Git + GitHub |
-| Project Management | GitHub Projects or Jira |
+| Project Management | GitHub Projects |
 
 ---
 
@@ -567,25 +465,25 @@ graph TB
 
 ### MVP Phase (First 3 Months)
 - **Development**: Team cost (variable)
-- **Infrastructure**: $50-100/month (AWS free tier + small instances)
-- **APIs**: $0 (using free tiers)
+- **Infrastructure**: $0 (no backend, no hosting)
+- **APIs**: $0 (USDA and Open Food Facts are free)
 - **Tools**: $0 (using free developer tools)
 
-**Total MVP Infrastructure**: ~$100/month
+**Total MVP Infrastructure**: **$0/month** 🎉
 
 ### Production (First Year)
-- **Infrastructure**: $200-500/month (auto-scaling, backups)
-- **APIs**: $0-100/month (depending on premium API adoption)
-- **Monitoring**: $50/month (Sentry, CloudWatch)
-- **CDN**: $20-50/month
+- **Infrastructure**: $0 (no backend server)
+- **APIs**: $0 (free nutrition APIs)
+- **App Store Fees**: $99/year (Apple) + $25 one-time (Google)
+- **Optional**: Domain for landing page ($12/year)
 
-**Total Production**: ~$300-700/month
+**Total Production**: **~$10/month** (app store fees amortized)
 
 ### Scaling (Year 2+)
-- Costs scale with users
-- May add Nutritionix API ($49-199/month)
-- Increased infrastructure ($500-2000/month)
-- Additional services as needed
+- Costs remain minimal (no server scaling needed)
+- May add premium nutrition API if needed ($49-199/month)
+- No infrastructure costs regardless of user count
+- **User data storage cost**: $0 (users provide their own Google Drive)
 
 ---
 

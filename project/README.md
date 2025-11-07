@@ -80,32 +80,32 @@ View these diagrams in [ARCHITECTURE.md](./ARCHITECTURE.md).
 ## 🛠️ Technology Stack
 
 ### Mobile
-- **Framework**: React Native (cross-platform)
+- **Framework**: Ionic + React (cross-platform for iOS, Android, Web)
 - **Language**: TypeScript
-- **State Management**: Redux Toolkit
-- **Local Database**: WatermelonDB
+- **State Management**: React Context / Redux (as needed)
+- **Local Database**: IndexedDB (browser standard)
+- **Native Features**: Capacitor plugins (Camera, Google Drive, etc.)
 
 ### Backend
-- **Runtime**: Node.js v18
-- **Framework**: Express.js with TypeScript
-- **ORM**: Prisma
-- **Database**: PostgreSQL 15
-- **Cache**: Redis 7
+- **None**: Zero backend infrastructure - privacy-first architecture
+- **All data**: Stored locally on user's device
+- **Sync**: Optional Google Drive backup (user-controlled)
 
-### Infrastructure
-- **Cloud**: AWS or Google Cloud Platform
-- **CI/CD**: GitHub Actions
-- **Monitoring**: CloudWatch + Sentry
-- **Analytics**: Firebase Analytics
+### External APIs (Client-Side Only)
+- **USDA FoodData Central**: Free nutrition database
+- **Open Food Facts**: Free barcode lookup
+- **No intermediary server**: Direct API calls from client
 
 See [TECHNOLOGY_STACK.md](./TECHNOLOGY_STACK.md) for detailed comparisons.
 
 ## 🔐 Security & Privacy
 
-- **Authentication**: JWT with refresh tokens
-- **Data Encryption**: At rest and in transit
-- **Compliance**: GDPR and CCPA ready
-- **API Security**: Rate limiting, input validation, SQL injection prevention
+- **No User Accounts**: No login, no passwords, no authentication
+- **Complete Privacy**: All data stays on user's device
+- **No Tracking**: No analytics, no user tracking
+- **Data Ownership**: Users control their data via Google Drive or local storage
+- **No Backend**: No servers, no databases, no data collection
+- **Offline-First**: App works 100% offline
 
 ## 📈 Success Metrics
 

@@ -19,228 +19,221 @@
 
 ### 1.1 High-Level Architecture
 
-Keyston follows a modern **three-tier architecture** with a mobile client, RESTful API backend, and cloud-based data storage.
+Keyston follows a **privacy-first, client-only architecture** with no backend server or central database.
 
-**Architecture Pattern**: Client-Server with MVC on mobile
+**Architecture Pattern**: Offline-First Progressive Web App
 
 **Key Principles**:
-- **Separation of Concerns**: Clear boundaries between presentation, business logic, and data
+- **Privacy-First**: All data stays on user's device, user controls their data
+- **Zero Backend**: No servers, no databases, no infrastructure to manage
+- **Offline-First**: App works 100% offline, syncs to user's cloud storage optionally
 - **Modularity**: Features developed as independent modules
-- **Scalability**: Horizontal scaling capability for backend services
-- **Offline-First**: Local data persistence with cloud synchronization
-- **Security by Design**: Authentication, encryption, and data protection built-in
+- **Security by Design**: Data encrypted, no user tracking or analytics
+- **User Data Ownership**: Users own and control their data via Google Drive or local storage
 
 ---
 
 ## 2. Architecture Diagrams
 
-### 2.1 System Architecture Diagram
+### 2.1 System Architecture Diagram - Privacy-First
 
 ```mermaid
 graph TB
-    subgraph "Client Layer"
-        A[Mobile App - iOS/Android]
-        A1[React Native/Flutter]
-        A2[Local Storage]
-        A3[Camera/Sensors]
+    subgraph "Mobile App - Ionic + React"
+        A[Ionic React App]
+        A1[Food Diary Module]
+        A2[Food Scanner Module]
+        A3[Workout Tracker Module]
+        A4[IndexedDB - Local Storage]
+        A5[React Context State]
     end
     
-    subgraph "API Gateway Layer"
-        B[API Gateway]
-        B1[Load Balancer]
-        B2[Rate Limiter]
-        B3[Authentication]
+    subgraph "Capacitor Native Layer"
+        B[Camera Plugin]
+        C[Google Drive Plugin]
+        D[File System Plugin]
     end
     
-    subgraph "Application Layer"
-        C[User Service]
-        D[Food Service]
-        E[Workout Service]
-        F[Nutrition Service]
+    subgraph "External APIs - Client-Side Calls Only"
+        E[USDA FoodData Central API]
+        F[Open Food Facts API]
     end
     
-    subgraph "Data Layer"
-        G[(User Database)]
-        H[(Food Diary DB)]
-        I[(Workout DB)]
-        J[Cache Layer - Redis]
+    subgraph "User's Cloud Storage"
+        G[Google Drive]
+        H[Future: iCloud/Dropbox]
     end
     
-    subgraph "External Services"
-        K[USDA FoodData API]
-        L[Nutritionix API]
-        M[Open Food Facts]
-        N[Barcode Lookup Service]
-    end
+    A --> A1
+    A --> A2
+    A --> A3
+    A1 --> A4
+    A2 --> A4
+    A3 --> A4
+    A --> A5
     
-    subgraph "Infrastructure"
-        O[File Storage - S3]
-        P[CDN]
-        Q[Analytics Service]
-        R[Monitoring & Logging]
-    end
+    A2 --> B
+    A --> C
+    A --> D
     
-    A --> B1
-    B1 --> B
-    B --> B2
-    B2 --> B3
-    B3 --> C
-    B3 --> D
-    B3 --> E
-    B3 --> F
+    A -->|Direct HTTPS| E
+    A -->|Direct HTTPS| F
     
+    A4 -->|Encrypted Backup| C
     C --> G
-    D --> H
-    E --> I
+    C -.Future.-> H
     
-    D --> J
-    F --> J
-    
-    F --> K
-    F --> L
-    F --> M
-    F --> N
-    
-    A --> O
-    O --> P
-    
-    C --> Q
-    D --> Q
-    E --> Q
-    
-    B --> R
-    C --> R
-    D --> R
-    E --> R
-    F --> R
-    
-    A2 -.Sync.-> D
-    A2 -.Sync.-> E
+    style A fill:#e1f5ff
+    style A4 fill:#fff3cd
+    style G fill:#d4edda
+    style E fill:#f8d7da
+    style F fill:#f8d7da
 ```
 
-### 2.2 Data Flow Diagram - Food Logging
+**Key Points**:
+- No backend server or API gateway
+- All data stored locally in IndexedDB
+- Direct API calls to nutrition databases from client
+- Optional encrypted backup to user's Google Drive
+- Complete privacy: no user accounts, no tracking
+
+### 2.2 Data Flow Diagram - Food Logging (Privacy-First)
 
 ```mermaid
 sequenceDiagram
     actor User
     participant App
-    participant LocalDB
-    participant API
-    participant Cache
-    participant NutritionAPI
-    participant Database
+    participant IndexedDB
+    participant USDACache
+    participant USDAAPI
+    participant GoogleDrive
     
     User->>App: Search for food
-    App->>API: GET /api/foods/search?q=apple
-    API->>Cache: Check cached results
+    App->>USDACache: Check local cache
     
     alt Cache Hit
-        Cache-->>API: Return cached data
+        USDACache-->>App: Return cached data
     else Cache Miss
-        API->>NutritionAPI: Query USDA API
-        NutritionAPI-->>API: Return nutrition data
-        API->>Cache: Store in cache (TTL: 24h)
+        App->>USDAAPI: Direct API call: GET /foods/search?q=apple
+        USDAAPI-->>App: Return nutrition data
+        App->>USDACache: Store in IndexedDB cache
     end
     
-    API-->>App: Return search results
     App-->>User: Display food options
     
     User->>App: Select food & portion
-    App->>LocalDB: Save to local storage
-    LocalDB-->>App: Confirm saved
+    App->>IndexedDB: Save food entry locally
+    IndexedDB-->>App: Confirm saved
     
-    App->>API: POST /api/diary/entries
-    API->>Database: Insert food entry
-    Database-->>API: Entry created
-    API-->>App: Return entry with ID
+    App-->>User: Update diary UI (instant)
     
-    App-->>User: Update diary UI
+    Note over App,GoogleDrive: Optional background sync
+    App->>GoogleDrive: Backup data (encrypted)
+    GoogleDrive-->>App: Confirm backup
 ```
 
-### 2.3 Component Architecture Diagram
+**Key Privacy Features**:
+- No backend server involved
+- All API calls direct from client
+- Data cached locally in IndexedDB
+- Instant updates (no network dependency)
+- Optional Google Drive backup controlled by user
+
+### 2.3 Component Architecture Diagram - Ionic React App
 
 ```mermaid
 graph LR
-    subgraph "Mobile Application"
-        subgraph "Presentation Layer"
-            UI1[Food Diary Screens]
-            UI2[Food Scanner Screens]
-            UI3[Workout Tracker Screens]
-            UI4[Dashboard/Stats]
+    subgraph "Ionic React Application"
+        subgraph "UI Layer - Ionic Components"
+            UI1[Food Diary Pages]
+            UI2[Food Scanner Pages]
+            UI3[Workout Tracker Pages]
+            UI4[Dashboard/Stats Pages]
+            UI5[Settings Page]
+        end
+        
+        subgraph "State Management"
+            STATE[React Context / Redux]
         end
         
         subgraph "Business Logic Layer"
-            BL1[Food Diary Manager]
-            BL2[Food Search Manager]
-            BL3[Workout Manager]
-            BL4[Sync Manager]
-            BL5[Analytics Manager]
+            BL1[Food Diary Service]
+            BL2[Food Search Service]
+            BL3[Workout Service]
+            BL4[Google Drive Sync Service]
+            BL5[Export/Import Service]
         end
         
         subgraph "Data Access Layer"
-            DAL1[Local Database]
-            DAL2[API Client]
+            DAL1[IndexedDB Manager]
+            DAL2[Nutrition API Client]
             DAL3[Cache Manager]
         end
         
-        subgraph "Utilities"
-            U1[Camera Service]
-            U2[Barcode Scanner]
-            U3[Authentication]
-            U4[Error Handler]
+        subgraph "Capacitor Plugins"
+            CAP1[Camera Plugin]
+            CAP2[Google Drive Plugin]
+            CAP3[File System Plugin]
         end
     end
     
-    UI1 --> BL1
-    UI2 --> BL2
-    UI3 --> BL3
-    UI4 --> BL5
+    UI1 --> STATE
+    UI2 --> STATE
+    UI3 --> STATE
+    UI4 --> STATE
+    UI5 --> STATE
+    
+    STATE --> BL1
+    STATE --> BL2
+    STATE --> BL3
+    STATE --> BL4
+    STATE --> BL5
     
     BL1 --> DAL1
-    BL1 --> DAL2
     BL2 --> DAL2
     BL2 --> DAL3
     BL3 --> DAL1
-    BL3 --> DAL2
     BL4 --> DAL1
-    BL4 --> DAL2
+    BL5 --> DAL1
     
-    UI2 --> U1
-    U1 --> U2
-    DAL2 --> U3
+    UI2 --> CAP1
+    BL4 --> CAP2
+    BL5 --> CAP3
     
-    BL1 --> U4
-    BL2 --> U4
-    BL3 --> U4
+    DAL2 -->|Direct HTTPS| EXT1[USDA API]
+    DAL2 -->|Direct HTTPS| EXT2[Open Food Facts API]
 ```
 
-### 2.4 Database Schema Diagram
+**No Backend Components**:
+- All logic runs in the client
+- No API gateway, no authentication service
+- No server-side database
+- No separate backend codebase to maintain
+
+---
+
+### 2.4 Local Database Schema (IndexedDB)
+
+**Privacy Note**: No user accounts - all data is local. No user_id foreign keys.
 
 ```mermaid
 erDiagram
-    USERS ||--o{ FOOD_DIARY_ENTRIES : logs
-    USERS ||--o{ WORKOUT_ENTRIES : performs
-    USERS ||--o{ WORKOUT_PRESETS : creates
-    USERS ||--o{ FAVORITE_FOODS : saves
-    USERS {
-        uuid id PK
-        string email UK
-        string password_hash
+    USER_SETTINGS {
+        string id PK "settings"
         string display_name
         date date_of_birth
         string gender
         float height_cm
         float current_weight_kg
         int daily_calorie_goal
+        jsonb macro_targets
         jsonb preferences
-        timestamp created_at
         timestamp updated_at
     }
     
-    FOOD_DIARY_ENTRIES ||--|| FOODS : references
+    FOOD_DIARY_ENTRIES ||--o{ FOODS : references
     FOOD_DIARY_ENTRIES {
         uuid id PK
-        uuid user_id FK
         uuid food_id FK
         date entry_date
         string meal_type
@@ -274,14 +267,11 @@ erDiagram
         float sugar_g
         float sodium_mg
         jsonb micronutrients
-        jsonb allergen_info
         timestamp created_at
-        timestamp updated_at
     }
     
     FAVORITE_FOODS {
         uuid id PK
-        uuid user_id FK
         uuid food_id FK
         int usage_count
         timestamp last_used_at
@@ -291,7 +281,6 @@ erDiagram
     WORKOUT_ENTRIES ||--o{ WORKOUT_EXERCISES : contains
     WORKOUT_ENTRIES {
         uuid id PK
-        uuid user_id FK
         uuid preset_id FK
         date workout_date
         time start_time
@@ -318,7 +307,6 @@ erDiagram
     WORKOUT_PRESETS ||--o{ PRESET_EXERCISES : contains
     WORKOUT_PRESETS {
         uuid id PK
-        uuid user_id FK
         string preset_name
         string description
         string workout_type
@@ -337,18 +325,35 @@ erDiagram
         int order_index
     }
     
-    SYNC_QUEUE {
+    GOOGLE_DRIVE_SYNC {
         uuid id PK
-        uuid user_id FK
-        string entity_type
-        uuid entity_id
-        string operation
-        jsonb data
-        string status
-        int retry_count
-        timestamp created_at
-        timestamp processed_at
+        timestamp last_sync_at
+        string last_sync_file_id
+        boolean auto_sync_enabled
+        jsonb sync_settings
     }
+    
+    API_CACHE {
+        string cache_key PK
+        jsonb data
+        timestamp cached_at
+        int ttl_seconds
+    }
+```
+
+**IndexedDB Object Stores**:
+- `user_settings` - Single record with user preferences
+- `food_diary_entries` - All food log entries
+- `foods` - Cached food nutrition data
+- `favorite_foods` - User's favorite foods for quick access
+- `workout_entries` - Workout log entries
+- `workout_exercises` - Exercises within workouts
+- `workout_presets` - Saved workout templates
+- `preset_exercises` - Exercises in presets
+- `google_drive_sync` - Sync metadata
+- `api_cache` - Cached nutrition API responses
+
+**No Authentication Tables**: No users, passwords, sessions, or tokens
 ```
 
 ### 2.5 Deployment Architecture
@@ -556,43 +561,193 @@ stateDiagram-v2
 
 ---
 
-## 5. API Design
+## 5. Client-Side Data Layer Design
 
-### 5.1 API Endpoints
+**Privacy-First**: No backend APIs - all operations are local
 
-#### Authentication
-```
-POST   /api/v1/auth/register
-POST   /api/v1/auth/login
-POST   /api/v1/auth/logout
-POST   /api/v1/auth/refresh
-POST   /api/v1/auth/forgot-password
-POST   /api/v1/auth/reset-password
-```
+### 5.1 IndexedDB Operations
 
-#### User Management
-```
-GET    /api/v1/users/me
-PUT    /api/v1/users/me
-PUT    /api/v1/users/me/preferences
-GET    /api/v1/users/me/stats
+#### Local Settings Management
+```javascript
+// Get user settings
+const settings = await db.user_settings.get('settings');
+
+// Update daily calorie goal
+await db.user_settings.put({
+  id: 'settings',
+  daily_calorie_goal: 2000,
+  macro_targets: { protein: 150, carbs: 200, fat: 65 },
+  updated_at: new Date()
+});
 ```
 
-#### Food Diary
-```
-GET    /api/v1/diary/entries?date=YYYY-MM-DD
-POST   /api/v1/diary/entries
-PUT    /api/v1/diary/entries/:id
-DELETE /api/v1/diary/entries/:id
-GET    /api/v1/diary/summary?start=YYYY-MM-DD&end=YYYY-MM-DD
+#### Food Diary Operations
+```javascript
+// Get today's entries
+const today = new Date().toISOString().split('T')[0];
+const entries = await db.food_diary_entries
+  .where('entry_date').equals(today)
+  .toArray();
+
+// Add food entry
+await db.food_diary_entries.add({
+  id: generateUUID(),
+  food_id: food.id,
+  entry_date: today,
+  meal_type: 'lunch',
+  serving_size: 150,
+  serving_unit: 'g',
+  calories: 247,
+  protein_g: 46,
+  created_at: new Date()
+});
+
+// Delete entry
+await db.food_diary_entries.delete(entryId);
 ```
 
-#### Food Search & Nutrition
+#### Food Search & Caching
+```javascript
+// Search with caching
+async function searchFood(query) {
+  const cacheKey = `search_${query}`;
+  const cached = await db.api_cache.get(cacheKey);
+  
+  if (cached && !isCacheExpired(cached)) {
+    return cached.data;
+  }
+  
+  // Direct API call to USDA
+  const response = await fetch(
+    `https://api.nal.usda.gov/fdc/v1/foods/search?query=${query}&api_key=${API_KEY}`
+  );
+  const data = await response.json();
+  
+  // Cache response
+  await db.api_cache.put({
+    cache_key: cacheKey,
+    data: data,
+    cached_at: new Date(),
+    ttl_seconds: 86400 // 24 hours
+  });
+  
+  return data;
+}
 ```
-GET    /api/v1/foods/search?q=query&limit=20&offset=0
-GET    /api/v1/foods/:id
-GET    /api/v1/foods/barcode/:code
-GET    /api/v1/foods/favorites
+
+#### Favorites Management
+```javascript
+// Add to favorites
+await db.favorite_foods.add({
+  id: generateUUID(),
+  food_id: food.id,
+  usage_count: 1,
+  last_used_at: new Date(),
+  created_at: new Date()
+});
+
+// Get favorites
+const favorites = await db.favorite_foods
+  .orderBy('last_used_at')
+  .reverse()
+  .limit(20)
+  .toArray();
+```
+
+#### Workout Operations
+```javascript
+// Save workout with exercises
+const workoutId = generateUUID();
+await db.workout_entries.add({
+  id: workoutId,
+  workout_date: new Date(),
+  workout_type: 'strength',
+  notes: 'Great session!',
+  created_at: new Date()
+});
+
+await db.workout_exercises.bulkAdd(exercises.map((ex, i) => ({
+  id: generateUUID(),
+  workout_entry_id: workoutId,
+  exercise_name: ex.name,
+  sets: ex.sets,
+  reps: ex.reps,
+  weight_kg: ex.weight,
+  order_index: i
+})));
+```
+
+### 5.2 External API Integration (Client-Side)
+
+#### USDA FoodData Central
+```javascript
+// Direct client-side API call
+const searchUSDA = async (query) => {
+  const url = `https://api.nal.usda.gov/fdc/v1/foods/search`;
+  const params = new URLSearchParams({
+    query: query,
+    pageSize: 20,
+    api_key: process.env.USDA_API_KEY
+  });
+  
+  const response = await fetch(`${url}?${params}`);
+  return response.json();
+};
+```
+
+#### Open Food Facts (Barcode)
+```javascript
+// Barcode lookup - no API key needed
+const lookupBarcode = async (barcode) => {
+  const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
+  const response = await fetch(url);
+  return response.json();
+};
+```
+
+### 5.3 Google Drive Sync
+
+```javascript
+// Export data to Google Drive
+async function backupToGoogleDrive() {
+  const allData = {
+    settings: await db.user_settings.toArray(),
+    food_diary: await db.food_diary_entries.toArray(),
+    workouts: await db.workout_entries.toArray(),
+    favorites: await db.favorite_foods.toArray(),
+    presets: await db.workout_presets.toArray(),
+    timestamp: new Date()
+  };
+  
+  const encrypted = encryptData(JSON.stringify(allData));
+  
+  // Use Capacitor Google Drive plugin
+  await GoogleDrive.uploadFile({
+    filename: 'keyston_backup.enc',
+    data: encrypted,
+    mimeType: 'application/octet-stream'
+  });
+}
+
+// Restore from Google Drive
+async function restoreFromGoogleDrive() {
+  const file = await GoogleDrive.downloadFile({
+    filename: 'keyston_backup.enc'
+  });
+  
+  const decrypted = decryptData(file.data);
+  const allData = JSON.parse(decrypted);
+  
+  // Merge or replace local data
+  await mergeImportedData(allData);
+}
+```
+
+**No Backend APIs**:
+- No authentication endpoints
+- No server-side CRUD operations
+- All operations are local IndexedDB transactions
+- External API calls made directly from client
 POST   /api/v1/foods/favorites
 DELETE /api/v1/foods/favorites/:id
 GET    /api/v1/foods/recent

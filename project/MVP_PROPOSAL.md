@@ -188,32 +188,35 @@ The following features are planned for future releases but NOT included in MVP:
 
 ### Phase 1: Foundation (Weeks 1-3)
 - Project setup and architecture
-- Database schema design
+- Local storage schema design (IndexedDB)
 - UI/UX wireframes and design system
-- API integration research and testing
+- Nutrition API integration research and testing
+- Google Drive sync setup
 
 ### Phase 2: Food Diary (Weeks 4-6)
-- Backend API development
 - Food diary UI implementation
-- Data persistence layer
+- Local data persistence with IndexedDB
 - Basic dashboard and statistics
+- Offline functionality
 
 ### Phase 3: Food Scanner (Weeks 7-9)
-- Nutrition API integrations
+- Nutrition API integrations (client-side)
 - Search functionality
-- Barcode scanning (if included)
-- Favorites and recent foods
+- Barcode scanning with Capacitor Camera
+- Favorites and recent foods (local storage)
 
 ### Phase 4: Workout Tracker (Weeks 10-11)
 - Workout entry UI
-- Preset management
+- Preset management (local storage)
 - Workout history and statistics
+- Google Drive backup integration
 
 ### Phase 5: Testing & Polish (Weeks 12-14)
 - Integration testing
 - User acceptance testing
 - Bug fixes and optimization
 - App store preparation
+- Privacy policy documentation
 
 **Total MVP Timeline: 14 weeks (3.5 months)**
 
@@ -222,27 +225,32 @@ The following features are planned for future releases but NOT included in MVP:
 ## 6. Technology Stack Recommendations
 
 ### Mobile Platform
-- **React Native** or **Flutter**: Cross-platform development for iOS and Android
-- Alternative: Native development (Swift/Kotlin) for better performance
+- **Ionic Framework** with **React**: Web-based cross-platform development for iOS, Android, and Web (PWA)
+- **TypeScript**: Type safety and better developer experience
+- **Capacitor**: Native functionality access (camera, file system, cloud storage)
 
-### Backend
-- **Node.js** with Express or **Python** with FastAPI
-- **PostgreSQL** or **MongoDB** for database
-- **Redis** for caching
+### Data Storage (Privacy-First)
+- **IndexedDB**: Browser-based local storage for all user data
+- **No backend server**: All data stays on user's device
+- **Google Drive Sync**: User-controlled encrypted backups via Capacitor plugin
+- Future: iCloud Drive, Dropbox, or local file export options
 
-### APIs & Services
-- USDA FoodData Central API (free, comprehensive)
-- Nutritionix API (commercial option)
-- Open Food Facts API (open source, barcode support)
+### APIs & Services (Client-Side Only)
+- USDA FoodData Central API (free, comprehensive, government verified)
+- Open Food Facts API (free, open source, excellent barcode support)
+- All API calls made directly from client (no proxy server)
 
-### Cloud Infrastructure
-- **AWS** or **Google Cloud Platform**
-- **Firebase** for authentication and real-time sync
+### No Cloud Infrastructure
+- **Zero backend**: No servers, no databases, no hosting costs
+- **Privacy-first**: No user accounts, no login, no authentication
+- **No analytics**: No user tracking or data collection
+- **Offline-first**: App works 100% offline, syncs to user's own cloud storage
 
 ### Additional Tools
-- **Analytics**: Firebase Analytics or Mixpanel
-- **Crash Reporting**: Sentry or Firebase Crashlytics
-- **CI/CD**: GitHub Actions or GitLab CI
+- **ESLint + Prettier**: Code quality
+- **Jest**: Testing framework
+- **Vite**: Fast build tool
+- **GitHub Actions**: CI/CD (optional)
 
 ---
 
@@ -251,18 +259,21 @@ The following features are planned for future releases but NOT included in MVP:
 ### Technical Risks
 | Risk | Impact | Mitigation |
 |------|--------|-----------|
-| API rate limits or downtime | High | Multiple database fallbacks, caching strategy |
-| Barcode database coverage | Medium | Start with major databases, allow manual entry |
-| Performance on older devices | Medium | Performance testing, optimization |
-| Data sync conflicts | Medium | Implement conflict resolution strategy |
+| API rate limits or downtime | Medium | Multiple database fallbacks, local caching, offline mode |
+| Barcode database coverage | Medium | Start with Open Food Facts, allow manual entry |
+| Performance on older devices | Medium | Performance testing, optimization, web-based lighter than native |
+| Google Drive sync conflicts | Low | Implement simple last-write-wins or timestamp-based resolution |
+| IndexedDB browser support | Low | Modern browsers all support it, graceful degradation |
+| Local storage limits | Low | IndexedDB supports GBs of data, alert users if approaching limit |
 
 ### Business Risks
 | Risk | Impact | Mitigation |
 |------|--------|-----------|
-| Market saturation | High | Focus on UX differentiation |
-| API costs exceeding budget | Medium | Monitor usage, implement caching |
-| User privacy concerns | High | GDPR/CCPA compliance, clear policies |
-| Low initial adoption | Medium | Beta testing, referral program |
+| Market saturation | High | Focus on privacy differentiation, no accounts/tracking |
+| API costs exceeding budget | None | APIs are free, no backend costs |
+| User privacy concerns | Low | Perfect privacy: no backend, no tracking, user controls data |
+| Low initial adoption | Medium | Market privacy-first approach, beta testing |
+| Users losing data | Medium | Encourage Google Drive backup, export functionality |
 
 ---
 
