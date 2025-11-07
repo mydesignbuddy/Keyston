@@ -310,43 +310,43 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
 
 **Goal**: Add barcode scanning capability
 
-#### Backend Tasks
-- [ ] Enhance barcode lookup
-  - GET /foods/barcode/:code
-  - Query Open Food Facts
-  - Fallback to cached barcodes
+#### Barcode Integration Tasks
+- [ ] Implement barcode lookup (client-side)
+  - Direct API call to Open Food Facts by barcode
+  - Response parsing and normalization
+  - Fallback to cached barcodes in IndexedDB
 - [ ] Create barcode cache system
-  - Store successful lookups
-  - User-contributed barcode data
+  - Store successful lookups in IndexedDB
+  - Cache product nutrition data
 - [ ] Implement manual food entry
-  - POST /foods (user-created foods)
-  - Custom nutrition values
-  - Link to user account
+  - Custom food creation form
+  - Store in IndexedDB foods object store
+  - Custom nutrition values input
 
-#### Mobile Tasks
-- [ ] Integrate camera library
-  - react-native-camera or expo-camera
-  - Request camera permissions
-- [ ] Implement barcode scanner screen
-  - Camera viewfinder
+#### UI Tasks
+- [ ] Integrate Capacitor Camera plugin
+  - Configure camera permissions
+  - Set up barcode scanning (use @capacitor-community/barcode-scanner)
+- [ ] Implement barcode scanner page
+  - Camera viewfinder with Ionic components
   - Barcode detection overlay
   - Flash toggle
   - Camera switch
 - [ ] Add barcode scanning logic
   - Detect UPC/EAN codes
-  - Query backend API
+  - Query Open Food Facts API
   - Display product info
 - [ ] Create manual entry form
-  - Food name, brand
+  - Food name, brand inputs
   - Serving size
-  - Manual nutrition input
-  - Save custom food
+  - Manual nutrition value inputs
+  - Save custom food to IndexedDB
 - [ ] Handle scan errors gracefully
   - "Not found" messages
   - Suggest manual entry or search
 - [ ] Polish scanner UX
-  - Haptic feedback on scan
-  - Success/error sounds
+  - Haptic feedback on scan (Capacitor Haptics)
+  - Success/error visual feedback
   - Smooth transitions
 
 #### QA Tasks
@@ -356,15 +356,15 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
   - Various product types
 - [ ] Test camera permissions flow
 - [ ] Test manual entry validation
-- [ ] Test offline behavior
+- [ ] Test offline behavior (cached barcodes work)
 - [ ] Performance testing (battery impact)
 
 **Sprint 4 Deliverables**:
 - ✅ Barcode scanning functional
-- ✅ Products found and added to diary
+- ✅ Products found via Open Food Facts
 - ✅ Manual entry available as fallback
 - ✅ Camera permissions handled properly
-- ✅ Good user experience
+- ✅ Works offline with cache
 
 ---
 
@@ -374,39 +374,31 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
 
 **Goal**: Implement manual workout tracking with preset support
 
-#### Backend Tasks
-- [ ] Create workout schema
-  - WorkoutEntries table
-  - WorkoutExercises table
-  - WorkoutPresets table
-  - PresetExercises table
-- [ ] Implement workout endpoints
-  - GET /workouts?start=&end=
-  - POST /workouts
-  - PUT /workouts/:id
-  - DELETE /workouts/:id
-  - GET /workouts/:id
-- [ ] Implement preset endpoints
-  - GET /workouts/presets
-  - POST /workouts/presets
-  - PUT /workouts/presets/:id
-  - DELETE /workouts/presets/:id
-- [ ] Create workout statistics endpoint
-  - GET /workouts/stats
+#### Data Layer Tasks
+- [ ] Create workout IndexedDB schema
+  - workout_entries object store
+  - workout_exercises object store
+  - workout_presets object store
+  - preset_exercises object store
+- [ ] Implement workout service
+  - Add/edit/delete workouts
+  - Query workouts by date range
+  - Add/edit/delete exercises
+  - Manage presets
+- [ ] Create workout statistics calculations
   - Total workouts by period
   - Exercise frequency
-  - Weight progression
-- [ ] Add data validation
-- [ ] Write tests
+  - Weight progression tracking
+- [ ] Add data validation for workouts
 
-#### Mobile Tasks
-- [ ] Create workout list screen
-  - Chronological workout list
-  - Calendar view option
+#### UI Tasks
+- [ ] Create workout list page
+  - Chronological workout list with Ionic cards
+  - Calendar view option (Ionic datetime)
   - Filter by workout type
-- [ ] Build add workout screen
+- [ ] Build add workout page
   - Workout type selector
-  - Date/time picker
+  - Date/time picker (Ionic datetime)
   - Exercise list
   - Add exercise button
   - Notes field
@@ -414,24 +406,24 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
   - Exercise name input
   - Sets, reps, weight inputs
   - Duration input (for cardio)
-  - Reorder exercises (drag and drop)
+  - Reorder exercises (drag and drop with Ionic reorder)
   - Remove exercise
 - [ ] Implement workout presets
-  - Preset list screen
+  - Preset list page
   - Create preset flow
   - Edit preset
   - Start workout from preset
-- [ ] Build workout detail screen
+- [ ] Build workout detail page
   - View completed workout
   - Exercise breakdown
-  - Edit completed workout
-- [ ] Create workout statistics screen
+  - Edit completed workout option
+- [ ] Create workout statistics page
   - Total workouts this week/month
   - Most frequent exercises
-  - Charts for progression
-- [ ] Implement local storage for workouts
-  - Offline workout logging
-  - Sync to backend
+  - Charts for progression (Chart.js)
+- [ ] Local storage integration
+  - All operations use IndexedDB
+  - Works completely offline
 
 #### QA Tasks
 - [ ] Test workout CRUD operations
@@ -439,14 +431,14 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
 - [ ] Test statistics calculations
 - [ ] Test offline behavior
 - [ ] Test data validation
-- [ ] Cross-platform testing
+- [ ] Cross-platform testing (iOS, Android, Web)
 
 **Sprint 5 Deliverables**:
 - ✅ Manual workout logging functional
 - ✅ Preset creation and usage working
 - ✅ Workout history displayed
 - ✅ Statistics showing correctly
-- ✅ Offline support implemented
+- ✅ 100% offline functionality
 
 ---
 
@@ -454,54 +446,46 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
 
 ### Sprint 6: Integration & Testing (Week 12-13)
 
-**Goal**: Comprehensive testing and bug fixing
+**Goal**: Comprehensive testing and optimization
 
-#### Backend Tasks
-- [ ] Integration testing
-  - Test complete user flows
-  - Test API endpoints together
-  - Test database transactions
-- [ ] Load testing
-  - Simulate concurrent users
-  - Test API rate limits
-  - Identify bottlenecks
-- [ ] Security audit
-  - Review authentication
-  - Check authorization on all endpoints
-  - SQL injection prevention
+#### Data Integrity Tasks
+- [ ] IndexedDB data integrity testing
+  - Test all CRUD operations
+  - Test data migrations if needed
+  - Test large dataset performance
+- [ ] Data validation testing
   - Input validation completeness
-- [ ] Performance optimization
-  - Database query optimization
-  - Caching improvements
-  - Response time optimization
-- [ ] API documentation
-  - Swagger/OpenAPI documentation
-  - Example requests/responses
-  - Error code documentation
+  - Data constraints enforcement
+- [ ] Privacy audit
+  - Verify no data sent to external servers (except nutrition APIs)
+  - Verify no tracking or analytics
+  - Review data encryption for Google Drive backups
 
-#### Mobile Tasks
+#### App Tasks
 - [ ] E2E testing
-  - Critical user flows automated (Detox)
+  - Critical user flows automated (Cypress or Playwright)
   - Food logging flow
   - Workout creation flow
   - Search and add flow
 - [ ] Performance optimization
   - Reduce app bundle size
   - Optimize images and assets
-  - Lazy load screens
+  - Lazy load pages
   - Minimize re-renders
+  - IndexedDB query optimization
 - [ ] Accessibility improvements
-  - Screen reader support
-  - Color contrast compliance
+  - Screen reader support (ARIA labels)
+  - Color contrast compliance (WCAG AA)
   - Font scaling support
   - Keyboard navigation
 - [ ] Offline mode testing
-  - All features work offline
-  - Sync works correctly
-  - Conflict resolution tested
-- [ ] Cross-device testing
-  - Various iOS devices
-  - Various Android devices
+  - All features work 100% offline
+  - Google Drive sync works correctly
+  - Verify no network dependency for core features
+- [ ] Cross-device/browser testing
+  - Various iOS devices (via Capacitor)
+  - Various Android devices (via Capacitor)
+  - Modern web browsers (Chrome, Firefox, Safari, Edge)
   - Different screen sizes
   - Different OS versions
 
@@ -516,7 +500,7 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
   - Issue tracking
 - [ ] Performance benchmarking
   - App launch time
-  - API response times
+  - IndexedDB query times
   - Battery consumption
   - Memory usage
 - [ ] Create test reports
@@ -529,7 +513,7 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
 - ✅ All critical bugs fixed
 - ✅ Performance optimized
 - ✅ Beta testing completed
-- ✅ Test reports generated
+- ✅ Privacy audit passed
 
 ---
 
@@ -537,83 +521,87 @@ This document breaks down the 14-week MVP timeline into detailed 2-week sprints 
 
 **Goal**: Final polish and app store submission preparation
 
-#### Backend Tasks
-- [ ] Production infrastructure setup
-  - Set up production database
-  - Configure auto-scaling
-  - Set up monitoring alerts
-  - Configure backups
-- [ ] Production deployment
-  - Deploy to production environment
-  - Verify all services running
-  - Test production APIs
-- [ ] Create runbooks
-  - Deployment procedures
-  - Rollback procedures
-  - Incident response guides
-- [ ] Final security review
-- [ ] Set up monitoring dashboards
+#### Google Drive Sync Implementation
+- [ ] Implement Google Drive backup
+  - Use Capacitor Google Drive plugin
+  - Export all IndexedDB data to JSON
+  - Encrypt backup data
+  - Upload to user's Google Drive
+- [ ] Implement Google Drive restore
+  - Download backup from Drive
+  - Decrypt data
+  - Merge with local data (conflict resolution)
+- [ ] Sync settings page
+  - Enable/disable auto-sync toggle
+  - Manual backup/restore buttons
+  - Last sync timestamp display
 
-#### Mobile Tasks
+#### Final App Tasks
 - [ ] App icon and splash screen
-  - Design app icons (all sizes)
+  - Design app icons (all required sizes for iOS/Android/Web)
   - Create splash screen
-  - Add to project
+  - Add to Capacitor configuration
 - [ ] Onboarding flow
-  - Welcome screens
+  - Welcome screens (emphasize privacy)
   - Feature tutorials
-  - Permission requests
-- [ ] Settings screen
-  - Profile editing
-  - Goal setting
-  - Units preference
-  - Notification settings
-  - Privacy settings
+  - Camera permission request
+  - Google Drive permission request (optional)
+- [ ] Settings page
+  - User preferences (name, goals, etc.)
+  - Goal setting (calories, macros)
+  - Units preference (metric/imperial)
+  - Google Drive sync settings
+  - Privacy information
+  - Data export/import
   - About/Help
 - [ ] Polish UI/UX
-  - Animation refinements
+  - Ionic animation refinements
   - Micro-interactions
   - Loading states
   - Empty states
   - Error messages
 - [ ] Prepare app store assets
   - Screenshots (all required sizes)
-  - App description
+  - App description (emphasize privacy-first)
   - Keywords
-  - Privacy policy
-  - Terms of service
+  - Privacy policy (no data collection statement)
+  - Terms of service (simple, user-friendly)
 - [ ] Final build preparation
-  - Version number update
+  - Version number: 1.0.0
   - Build number increment
   - Release notes
-  - Signing certificates
+  - iOS signing certificates
+  - Android signing key
   - Create production builds
 
 #### Launch Tasks
 - [ ] App store submissions
   - iOS App Store submission
   - Google Play Store submission
+  - Web PWA deployment (optional)
   - Fill out app metadata
   - Upload builds
 - [ ] Create support infrastructure
-  - Help documentation
-  - FAQ page
+  - Help documentation (privacy-focused FAQ)
+  - FAQ page (how to backup, restore, etc.)
   - Contact/support email
-  - Crash reporting configured
+  - Optional: Local error logging (no external services)
 - [ ] Marketing preparation
-  - Landing page
-  - Social media accounts
+  - Landing page (emphasize privacy, no tracking)
+  - Social media accounts (optional)
   - Press kit
 - [ ] Launch monitoring plan
-  - Analytics dashboards
-  - Error monitoring
+  - Optional: Privacy-friendly local analytics only
+  - GitHub Issues for bug reports
   - User feedback channels
 
 **Sprint 7 Deliverables**:
-- ✅ Production environment live
-- ✅ App submitted to stores
+- ✅ Google Drive sync functional
+- ✅ App submitted to iOS and Android stores
 - ✅ Documentation complete
-- ✅ Support infrastructure ready
+- ✅ Privacy policy and terms ready
+- ✅ Zero backend infrastructure
+- ✅ MVP LAUNCHED! 🚀
 - ✅ Monitoring operational
 - ✅ MVP LAUNCHED! 🚀
 
