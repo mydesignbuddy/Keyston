@@ -67,9 +67,9 @@ Empower users to achieve their health and fitness goals through intuitive tracki
   - Search across multiple nutrition databases
   - Filter and sort results
 - **Database Integration**:
-  - NutritionValue.org API integration
-  - USDA FoodData Central API
-  - MyFoodData.com database
+  - USDA FoodData Central API integration
+  - Open Food Facts API (barcode support)
+  - Nutritionix API (optional/future commercial option)
 - **Barcode Scanner** (if time permits in MVP):
   - Camera-based barcode scanning
   - UPC/EAN code lookup
