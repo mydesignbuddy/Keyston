@@ -57,11 +57,10 @@ Log workouts manually with support for creating reusable workout presets. Track 
 
 All architecture diagrams are created in Mermaid format for easy visualization and version control. Key diagrams include:
 
-- **System Architecture Diagram** - Overall system structure
-- **Data Flow Diagram** - Food logging flow
-- **Component Architecture** - Mobile app and backend structure
-- **Database Schema** - Complete ER diagram
-- **Deployment Architecture** - Cloud infrastructure setup
+- **System Architecture Diagram** - Privacy-first client-only architecture
+- **Data Flow Diagram** - Food logging flow (client-side)
+- **Component Architecture** - Ionic React app structure
+- **Database Schema** - Complete IndexedDB schema (ER diagram)
 
 View these diagrams in [ARCHITECTURE.md](./ARCHITECTURE.md).
 

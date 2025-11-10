@@ -356,71 +356,6 @@ erDiagram
 **No Authentication Tables**: No users, passwords, sessions, or tokens
 ```
 
-### 2.5 Deployment Architecture
-
-```mermaid
-graph TB
-    subgraph "CDN Layer"
-        CDN[CloudFront/CDN]
-    end
-    
-    subgraph "Application Load Balancer"
-        ALB[Load Balancer]
-    end
-    
-    subgraph "Application Tier - Auto Scaling Group"
-        API1[API Server 1]
-        API2[API Server 2]
-        API3[API Server N]
-    end
-    
-    subgraph "Cache Layer"
-        REDIS1[Redis Primary]
-        REDIS2[Redis Replica]
-    end
-    
-    subgraph "Database Tier"
-        RDS1[(PostgreSQL Primary)]
-        RDS2[(PostgreSQL Read Replica)]
-    end
-    
-    subgraph "Storage"
-        S3[S3 Bucket]
-    end
-    
-    subgraph "Monitoring"
-        MON[CloudWatch/Monitoring]
-        LOG[Centralized Logging]
-    end
-    
-    CDN --> ALB
-    ALB --> API1
-    ALB --> API2
-    ALB --> API3
-    
-    API1 --> REDIS1
-    API2 --> REDIS1
-    API3 --> REDIS1
-    REDIS1 --> REDIS2
-    
-    API1 --> RDS1
-    API2 --> RDS1
-    API3 --> RDS1
-    RDS1 --> RDS2
-    
-    API1 --> S3
-    API2 --> S3
-    API3 --> S3
-    
-    API1 --> MON
-    API2 --> MON
-    API3 --> MON
-    
-    API1 --> LOG
-    API2 --> LOG
-    API3 --> LOG
-```
-
 ---
 
 ## 3. Component Architecture
@@ -471,93 +406,59 @@ keyston-mobile/
 │   └── types/
 ```
 
-### 3.2 Backend Service Structure
-
-```
-keyston-backend/
-├── src/
-│   ├── controllers/
-│   │   ├── authController.ts
-│   │   ├── userController.ts
-│   │   ├── foodDiaryController.ts
-│   │   ├── foodSearchController.ts
-│   │   └── workoutController.ts
-│   ├── services/
-│   │   ├── authService.ts
-│   │   ├── foodDiaryService.ts
-│   │   ├── nutritionService.ts
-│   │   └── workoutService.ts
-│   ├── models/
-│   │   ├── User.ts
-│   │   ├── FoodDiaryEntry.ts
-│   │   ├── Food.ts
-│   │   └── WorkoutEntry.ts
-│   ├── middleware/
-│   │   ├── auth.ts
-│   │   ├── validation.ts
-│   │   └── errorHandler.ts
-│   ├── integrations/
-│   │   ├── usda/
-│   │   ├── nutritionix/
-│   │   └── openFoodFacts/
-│   ├── database/
-│   │   ├── migrations/
-│   │   └── seeders/
-│   ├── utils/
-│   └── config/
-```
-
 ---
 
 ## 4. Data Architecture
 
-### 4.1 Data Storage Strategy
+### 4.1 IndexedDB Data Storage
 
-#### Local Storage (Mobile)
-- **SQLite/Realm**: Structured data for offline access
-- **AsyncStorage**: User preferences and settings
-- **Cache**: API responses (LRU cache with TTL)
+**Privacy-First Local Storage**: All data stored exclusively on user's device
 
-#### Cloud Storage
-- **Primary Database**: PostgreSQL for structured data
-- **Cache**: Redis for session data and API responses
-- **File Storage**: S3 for user-uploaded images
-- **Backup**: Automated daily backups with point-in-time recovery
+#### IndexedDB Object Stores
+- **user_settings**: Single record with user preferences, goals, and app settings
+- **food_diary_entries**: All food log entries with full nutrition data
+- **foods**: Cached food nutrition data from API searches
+- **favorite_foods**: User's favorite foods for quick access
+- **workout_entries**: Workout log entries
+- **workout_exercises**: Exercises within each workout
+- **workout_presets**: Saved workout templates
+- **preset_exercises**: Exercises in workout presets
+- **google_drive_sync**: Sync metadata and last sync timestamp
+- **api_cache**: Cached nutrition API responses with TTL
 
-### 4.2 Data Synchronization
+#### Data Retention
+- **Local Storage**: No automatic cleanup - user controls all data
+- **API Cache**: Automatically cleaned based on TTL (24h for searches, 7d for nutrition)
+- **User Data**: Persists indefinitely unless user manually deletes
+- **Google Drive Backups**: User controls retention in their own Drive
 
-```mermaid
-stateDiagram-v2
-    [*] --> LocalChange
-    LocalChange --> QueuedForSync: Add to sync queue
-    QueuedForSync --> Syncing: Network available
-    Syncing --> Synced: Success
-    Syncing --> Failed: Network error
-    Failed --> QueuedForSync: Retry with backoff
-    Synced --> [*]
-    
-    note right of Syncing
-        Conflict Resolution:
-        - Last-write-wins
-        - Timestamps for ordering
-    end note
-```
+### 4.2 Google Drive Sync Strategy
 
-**Sync Strategy**:
-- **Optimistic Updates**: Apply changes locally immediately
-- **Background Sync**: Queue-based synchronization
-- **Conflict Resolution**: Last-write-wins with timestamp comparison
-- **Retry Logic**: Exponential backoff for failed syncs
+**User-Controlled Backup**: Optional encrypted sync to user's private Google Drive
+
+#### Sync Flow
+1. **Manual or Automatic Trigger**: User chooses when to backup
+2. **Data Export**: Export all IndexedDB data to JSON format
+3. **Encryption**: Encrypt data before upload (user-controlled encryption key)
+4. **Upload to Drive**: Store encrypted file in user's Google Drive folder
+5. **Restore**: Download, decrypt, and merge with local data
+
+#### Conflict Resolution
+- **Simple Strategy**: Last-write-wins based on timestamps
+- **User Choice**: Prompt user to choose between local and cloud data on conflicts
+- **No Server Logic**: All conflict resolution happens on client
 
 ### 4.3 Caching Strategy
 
+**Client-Side API Response Caching** in IndexedDB
+
 | Data Type | Cache Duration | Invalidation Strategy |
 |-----------|---------------|----------------------|
-| Food search results | 24 hours | TTL-based |
-| User profile | 1 hour | On update |
-| Nutrition data | 7 days | Manual refresh option |
+| Food search results | 24 hours | TTL-based expiration |
+| Nutrition data | 7 days | TTL-based expiration |
 | Recent foods | 30 days | LRU eviction |
-| Workout presets | Until modified | Event-based |
+| Barcode lookups | 30 days | TTL-based expiration |
+| Workout presets | Until modified | Never expires (local data) |
 
 ---
 
