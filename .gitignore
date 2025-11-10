@@ -24,8 +24,10 @@ yarn-debug.log*
 yarn-error.log*
 
 # Capacitor
-android/
-ios/
+# Note: For Sprint 0, native platforms are included in the repository
+# In production, these would typically be gitignored and generated per developer
+# android/
+# ios/
 .capacitor/
 
 # IDE
