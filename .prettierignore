@@ -1,0 +1,10 @@
+node_modules
+build
+dist
+coverage
+android
+ios
+.git
+.github
+*.log
+package-lock.json
