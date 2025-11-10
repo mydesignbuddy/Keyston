@@ -4,6 +4,7 @@
 
 [![Platform](https://img.shields.io/badge/Platform-iOS%20%7C%20Android-green.svg)](https://ionicframework.com)
 [![Framework](https://img.shields.io/badge/Framework-Ionic%20%2B%20React-blue.svg)](https://ionicframework.com/react)
+[![Rights](https://img.shields.io/badge/Rights-All%20Rights%20Reserved-red.svg)]()
 
 ---
 
@@ -181,7 +182,6 @@ Keyston/
 4. **Local Storage**: All data stored in IndexedDB on your device
 5. **Encrypted Backups**: Optional Google Drive backup uses client-side encryption
 6. **No Third-Party Cookies**: Only essential API calls to nutrition databases
-7. **Open Source**: Code is transparent and auditable
 
 ### Data Storage
 
@@ -201,21 +201,13 @@ Keyston/
 
 ---
 
-## 🤝 Contributing
+## 📝 License & Copyright
 
-Contributions are welcome! This is an open-source, privacy-focused project.
+**Copyright © 2025 Buddy Toups, Jr. All Rights Reserved.**
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+This software and associated documentation files are proprietary and confidential. Unauthorized copying, modification, distribution, or use of this software, via any medium, is strictly prohibited without express written permission from the copyright holder.
 
----
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+For licensing inquiries, please contact the project maintainer.
 
 ---
 
@@ -229,7 +221,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📧 Contact
 
-**Project Maintainer**: mydesignbuddy  
+**Project Owner**: Buddy Toups, Jr.  
+**GitHub**: mydesignbuddy  
 **Repository**: [github.com/mydesignbuddy/Keyston](https://github.com/mydesignbuddy/Keyston)
 
 ---
