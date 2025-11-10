@@ -354,7 +354,6 @@ erDiagram
 - `api_cache` - Cached nutrition API responses
 
 **No Authentication Tables**: No users, passwords, sessions, or tokens
-```
 
 ---
 
