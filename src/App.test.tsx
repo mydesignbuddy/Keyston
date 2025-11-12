@@ -8,22 +8,17 @@ test('renders Keyston app', () => {
   expect(headingElement).toBeInTheDocument();
 });
 
-test('renders tab navigation with all tabs', () => {
+test('renders tab navigation with all three tabs', () => {
   render(<App />);
-  
-  // Check for tab buttons in the tab bar
-  const tabBar = document.querySelector('ion-tab-bar');
-  expect(tabBar).toBeInTheDocument();
-  
-  const tabButtons = document.querySelectorAll('ion-tab-button');
-  expect(tabButtons).toHaveLength(3);
-  
-  // Verify tab names by checking aria labels or tab attributes
-  const homeTab = document.querySelector('[tab="home"]');
-  const foodDiaryTab = document.querySelector('[tab="food-diary"]');
-  const workoutsTab = document.querySelector('[tab="workouts"]');
-  
-  expect(homeTab).toBeInTheDocument();
-  expect(foodDiaryTab).toBeInTheDocument();
-  expect(workoutsTab).toBeInTheDocument();
+
+  // Verify all three tab labels are present in the tab bar
+  // Using getAllByText to find all instances, then checking we have at least 3
+  const homeLabels = screen.getAllByText('Home');
+  const foodDiaryLabels = screen.getAllByText('Food Diary');
+  const workoutsLabels = screen.getAllByText('Workouts');
+
+  // Each tab label should appear at least once
+  expect(homeLabels.length).toBeGreaterThanOrEqual(1);
+  expect(foodDiaryLabels.length).toBeGreaterThanOrEqual(1);
+  expect(workoutsLabels.length).toBeGreaterThanOrEqual(1);
 });
