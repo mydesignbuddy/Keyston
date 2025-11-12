@@ -122,29 +122,44 @@ cd Keyston
 # Install dependencies
 npm install
 
-# Run on web browser (development)
-ionic serve
+# Start Ionic development server (opens in browser with live reload)
+npm start
 
-# Run on iOS simulator
-ionic capacitor run ios
+# Run on iOS simulator (requires Mac + Xcode)
+npm run cap:run:ios
 
-# Run on Android emulator
-ionic capacitor run android
+# Run on Android emulator (requires Android Studio)
+npm run cap:run:android
 ```
 
 ### Building for Production
 
 ```bash
-# Build web assets
-ionic build --prod
+# Build optimized production bundle
+npm run build:prod
 
-# Sync with native platforms
-ionic capacitor sync
+# Sync build with native platforms
+npm run cap:sync
 
-# Open in platform IDE for final build
-ionic capacitor open ios
-ionic capacitor open android
+# Open native IDE for deployment
+npm run cap:open:ios      # Xcode
+npm run cap:open:android  # Android Studio
 ```
+
+### Available Scripts
+
+- `npm start` - Start Ionic development server with live reload
+- `npm run build` - Build development bundle
+- `npm run build:prod` - Build optimized production bundle
+- `npm test` - Run Jest tests
+- `npm run lint` - Check code for linting errors
+- `npm run lint:fix` - Fix linting errors automatically
+- `npm run format` - Format code with Prettier
+- `npm run cap:sync` - Build and sync with native platforms
+- `npm run cap:run:ios` - Run on iOS simulator with live reload
+- `npm run cap:run:android` - Run on Android emulator with live reload
+- `npm run cap:open:ios` - Open project in Xcode
+- `npm run cap:open:android` - Open project in Android Studio
 
 ---
 
