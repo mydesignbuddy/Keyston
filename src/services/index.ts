@@ -10,3 +10,6 @@ export * from './foodService';
 export * from './favoriteFoodsService';
 export * from './workoutService';
 export * from './apiCacheService';
+export * from './cameraService';
+export * from './filesystemService';
+export * from './googleDriveService';
