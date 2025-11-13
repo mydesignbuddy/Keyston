@@ -59,7 +59,7 @@ Comprehensive test coverage including:
 ## Technical Details
 
 ### Dependencies Added
-- `dexie@^4.0.10` - IndexedDB wrapper
+- `dexie@^4.2.1` - IndexedDB wrapper
 - `fake-indexeddb@^6.0.0` (dev) - Testing infrastructure
 
 ### Code Statistics

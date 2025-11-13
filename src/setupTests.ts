@@ -20,6 +20,8 @@ if (typeof crypto === 'undefined' || !crypto.randomUUID) {
 
 // Polyfill structuredClone for Node.js < 17
 // This is a simplified version that handles basic cloning including Dates
+// LIMITATIONS: Does not handle Map, Set, RegExp, Error, or circular references
+// For test purposes only - production code runs in browsers with native support
 if (typeof structuredClone === 'undefined') {
   global.structuredClone = <T>(obj: T): T => {
     if (obj === null || typeof obj !== 'object') {

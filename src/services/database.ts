@@ -43,7 +43,7 @@ export class KeystonDatabase extends Dexie {
       foodDiaryEntries: 'id, foodId, entryDate, mealType, [entryDate+mealType], createdAt',
 
       // Foods cache - indexed by name and barcode for search
-      foods: 'id, name, barcode, dataSource, createdAt',
+      foods: 'id, name, barcode, dataSource, externalId, createdAt, [dataSource+externalId]',
 
       // Favorite foods - indexed by last used
       favoriteFoods: 'id, foodId, lastUsedAt, usageCount',
