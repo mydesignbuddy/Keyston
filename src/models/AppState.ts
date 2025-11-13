@@ -54,6 +54,6 @@ export const DEFAULT_DAILY_GOALS: DailyGoals = {
 export const DEFAULT_APP_STATE: AppState = {
   currentDate: new Date(),
   dailyGoals: DEFAULT_DAILY_GOALS,
-  theme: 'system',
+  theme: 'light',
   isLoading: false,
 };

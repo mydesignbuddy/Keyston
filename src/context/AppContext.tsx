@@ -103,6 +103,22 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children, initialState
     savePreferencesToStorage(preferences);
   }, [state.theme, state.isLoading]);
 
+  // Apply theme class to document body
+  useEffect(() => {
+    const body = document.body;
+
+    // Remove existing theme classes
+    body.classList.remove('light-theme', 'dark-theme');
+
+    // Apply theme based on preference
+    if (state.theme === 'light') {
+      body.classList.add('light-theme');
+    } else if (state.theme === 'dark') {
+      body.classList.add('dark-theme');
+    }
+    // 'system' theme uses CSS media query, no class needed
+  }, [state.theme]);
+
   /**
    * Update the current date
    */
