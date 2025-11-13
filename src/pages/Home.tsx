@@ -13,9 +13,19 @@ import {
   IonIcon,
 } from '@ionic/react';
 import { heart, fitness, restaurant } from 'ionicons/icons';
+import { useApp } from '../hooks/useAppContext';
 import './Home.css';
 
 const Home: React.FC = () => {
+  const { state, setTheme } = useApp();
+
+  const handleThemeToggle = () => {
+    const themeOrder: Array<typeof state.theme> = ['light', 'dark', 'system'];
+    const currentIndex = themeOrder.indexOf(state.theme);
+    const nextIndex = (currentIndex + 1) % themeOrder.length;
+    setTheme(themeOrder[nextIndex]);
+  };
+
   return (
     <IonPage>
       <IonHeader>
@@ -67,6 +77,26 @@ const Home: React.FC = () => {
             </IonCardHeader>
             <IonCardContent>
               All data stored locally. No user accounts, no tracking, complete privacy.
+            </IonCardContent>
+          </IonCard>
+
+          <IonCard>
+            <IonCardHeader>
+              <IonCardTitle>🎨 State Management Demo</IonCardTitle>
+            </IonCardHeader>
+            <IonCardContent>
+              <p>
+                Current Theme: <strong>{state.theme}</strong>
+              </p>
+              <p>
+                Daily Calorie Goal: <strong>{state.dailyGoals.calories}</strong>
+              </p>
+              <p style={{ fontSize: '0.9em', color: 'var(--ion-color-medium)' }}>
+                State persists across navigation. Try changing tabs and coming back!
+              </p>
+              <IonButton expand="block" onClick={handleThemeToggle}>
+                Toggle Theme (Current: {state.theme})
+              </IonButton>
             </IonCardContent>
           </IonCard>
 

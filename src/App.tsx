@@ -15,6 +15,7 @@ import { home, restaurant, fitness } from 'ionicons/icons';
 import Home from './pages/Home';
 import FoodDiary from './pages/FoodDiary';
 import Workouts from './pages/Workouts';
+import { AppProvider } from './context/AppContext';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -38,40 +39,42 @@ import './theme/variables.css';
 setupIonicReact();
 
 const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Route exact path="/home">
-            <Home />
-          </Route>
-          <Route exact path="/food-diary">
-            <FoodDiary />
-          </Route>
-          <Route exact path="/workouts">
-            <Workouts />
-          </Route>
-          <Route exact path="/">
-            <Redirect to="/home" />
-          </Route>
-        </IonRouterOutlet>
-        <IonTabBar slot="bottom">
-          <IonTabButton tab="home" href="/home">
-            <IonIcon aria-hidden="true" icon={home} />
-            <IonLabel>Home</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="food-diary" href="/food-diary">
-            <IonIcon aria-hidden="true" icon={restaurant} />
-            <IonLabel>Food Diary</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="workouts" href="/workouts">
-            <IonIcon aria-hidden="true" icon={fitness} />
-            <IonLabel>Workouts</IonLabel>
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </IonReactRouter>
-  </IonApp>
+  <AppProvider>
+    <IonApp>
+      <IonReactRouter>
+        <IonTabs>
+          <IonRouterOutlet>
+            <Route exact path="/home">
+              <Home />
+            </Route>
+            <Route exact path="/food-diary">
+              <FoodDiary />
+            </Route>
+            <Route exact path="/workouts">
+              <Workouts />
+            </Route>
+            <Route exact path="/">
+              <Redirect to="/home" />
+            </Route>
+          </IonRouterOutlet>
+          <IonTabBar slot="bottom">
+            <IonTabButton tab="home" href="/home">
+              <IonIcon aria-hidden="true" icon={home} />
+              <IonLabel>Home</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="food-diary" href="/food-diary">
+              <IonIcon aria-hidden="true" icon={restaurant} />
+              <IonLabel>Food Diary</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="workouts" href="/workouts">
+              <IonIcon aria-hidden="true" icon={fitness} />
+              <IonLabel>Workouts</IonLabel>
+            </IonTabButton>
+          </IonTabBar>
+        </IonTabs>
+      </IonReactRouter>
+    </IonApp>
+  </AppProvider>
 );
 
 export default App;
