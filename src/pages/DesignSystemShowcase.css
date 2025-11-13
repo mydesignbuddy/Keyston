@@ -1,0 +1,63 @@
+/* Design System Showcase Page Styles */
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.badge-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.button-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.nutrition-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-md);
+}
+
+.nutrition-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm);
+  background: var(--ion-color-light);
+  border-radius: var(--border-radius-md);
+}
+
+.nutrition-item ion-chip {
+  margin: 0;
+}
+
+/* Nutrition color utility classes for chips */
+.nutrition-protein {
+  --background: var(--color-protein);
+  --color: white;
+}
+
+.nutrition-carbs {
+  --background: var(--color-carbs);
+  --color: white;
+}
+
+.nutrition-fat {
+  --background: var(--color-fat);
+  --color: white;
+}
+
+.nutrition-calories {
+  --background: var(--color-calories);
+  --color: white;
+}
