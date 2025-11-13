@@ -206,12 +206,12 @@ describe('AppContext', () => {
   });
 
   describe('resetState', () => {
-    it('should reset state to defaults and clear localStorage', async () => {
+    it('should reset state to defaults and clear localStorage', () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
         <AppProvider>{children}</AppProvider>
       );
 
-      const { result, waitForNextUpdate } = renderHook(() => useApp(), { wrapper });
+      const { result } = renderHook(() => useApp(), { wrapper });
 
       // Modify state
       act(() => {
