@@ -20,9 +20,10 @@ const Home: React.FC = () => {
   const { state, setTheme } = useApp();
 
   const handleThemeToggle = () => {
-    const nextTheme =
-      state.theme === 'light' ? 'dark' : state.theme === 'dark' ? 'system' : 'light';
-    setTheme(nextTheme);
+    const themeOrder: Array<typeof state.theme> = ['light', 'dark', 'system'];
+    const currentIndex = themeOrder.indexOf(state.theme);
+    const nextIndex = (currentIndex + 1) % themeOrder.length;
+    setTheme(themeOrder[nextIndex]);
   };
 
   return (

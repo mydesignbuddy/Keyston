@@ -147,16 +147,30 @@ resetState(); // Resets to defaults and clears localStorage
 
 ## State Persistence
 
-State automatically persists to localStorage whenever it changes:
+**Important: Privacy-First Architecture**
 
-- **Storage Key**: `keyston_app_state`
-- **Automatic Save**: State saves on every update
-- **Automatic Load**: State loads from localStorage on app initialization
+Only UI preferences are persisted to localStorage. Health-related data follows a different pattern:
+
+- **Persisted to localStorage (UI Preferences)**:
+  - `theme` - User's theme preference (light/dark/system)
+  - `isLoading` - Global loading indicator state
+  
+- **NOT Persisted to localStorage (Health Data)**:
+  - `dailyGoals` - Should be stored in IndexedDB when implemented
+  - `currentDate` - Should be stored in IndexedDB when implemented
+
+### localStorage Details
+
+- **Storage Key**: `keyston_ui_preferences`
+- **Automatic Save**: UI preferences save whenever theme or isLoading changes
+- **Automatic Load**: Preferences load from localStorage on app initialization
 - **Error Handling**: Gracefully handles corrupted data by falling back to defaults
 
 ### Privacy Considerations
 
-- Only user preferences are stored (no personal health data)
+- **Only UI preferences stored in localStorage** (theme, loading state)
+- **Health data (dailyGoals, currentDate) NOT stored in localStorage**
+- Health data should use IndexedDB with proper encryption (to be implemented in future sprints)
 - localStorage is client-side only (never transmitted)
 - Data can be cleared using `resetState()` or clearing browser data
 - Health/fitness data should be stored in IndexedDB (separate from state management)

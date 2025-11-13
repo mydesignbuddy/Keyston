@@ -61,7 +61,7 @@ describe('AppContext', () => {
   });
 
   describe('state persistence', () => {
-    it('should persist state to localStorage', () => {
+    it('should persist only UI preferences (theme) to localStorage', () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
         <AppProvider>{children}</AppProvider>
       );
@@ -72,17 +72,19 @@ describe('AppContext', () => {
         result.current.setTheme('dark');
       });
 
-      const stored = JSON.parse(localStorage.getItem('keyston_app_state') || '{}');
+      const stored = JSON.parse(localStorage.getItem('keyston_ui_preferences') || '{}');
       expect(stored.theme).toBe('dark');
+      // Health data should NOT be in localStorage
+      expect(stored.dailyGoals).toBeUndefined();
+      expect(stored.currentDate).toBeUndefined();
     });
 
-    it('should load state from localStorage on mount', () => {
-      const savedState = {
-        ...DEFAULT_APP_STATE,
+    it('should load only UI preferences from localStorage on mount', () => {
+      const savedPreferences = {
         theme: 'dark',
-        dailyGoals: { calories: 3000, protein: 180, carbs: 300, fat: 100 },
+        isLoading: false,
       };
-      localStorage.setItem('keyston_app_state', JSON.stringify(savedState));
+      localStorage.setItem('keyston_ui_preferences', JSON.stringify(savedPreferences));
 
       const wrapper = ({ children }: { children: React.ReactNode }) => (
         <AppProvider>{children}</AppProvider>
@@ -90,12 +92,34 @@ describe('AppContext', () => {
 
       const { result } = renderHook(() => useApp(), { wrapper });
 
+      // Theme should be loaded from localStorage
       expect(result.current.state.theme).toBe('dark');
-      expect(result.current.state.dailyGoals.calories).toBe(3000);
+      // Health data should use defaults (not from localStorage)
+      expect(result.current.state.dailyGoals.calories).toBe(DEFAULT_DAILY_GOALS.calories);
+    });
+
+    it('should not persist health data (dailyGoals, currentDate) to localStorage', () => {
+      const wrapper = ({ children }: { children: React.ReactNode }) => (
+        <AppProvider>{children}</AppProvider>
+      );
+
+      const { result } = renderHook(() => useApp(), { wrapper });
+
+      act(() => {
+        result.current.updateDailyGoals({ calories: 3000, protein: 200, carbs: 300, fat: 100 });
+        result.current.setCurrentDate(new Date('2024-01-01'));
+      });
+
+      const stored = JSON.parse(localStorage.getItem('keyston_ui_preferences') || '{}');
+      // Health data should NOT be persisted to localStorage
+      expect(stored.dailyGoals).toBeUndefined();
+      expect(stored.currentDate).toBeUndefined();
+      // Only UI preferences should be stored
+      expect(stored.theme).toBeDefined();
     });
 
     it('should handle corrupted localStorage data gracefully', () => {
-      localStorage.setItem('keyston_app_state', 'invalid json');
+      localStorage.setItem('keyston_ui_preferences', 'invalid json');
 
       const wrapper = ({ children }: { children: React.ReactNode }) => (
         <AppProvider>{children}</AppProvider>
@@ -182,12 +206,12 @@ describe('AppContext', () => {
   });
 
   describe('resetState', () => {
-    it('should reset state to defaults and clear localStorage', () => {
+    it('should reset state to defaults and clear localStorage', async () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
         <AppProvider>{children}</AppProvider>
       );
 
-      const { result } = renderHook(() => useApp(), { wrapper });
+      const { result, waitForNextUpdate } = renderHook(() => useApp(), { wrapper });
 
       // Modify state
       act(() => {
@@ -195,14 +219,21 @@ describe('AppContext', () => {
         result.current.updateDailyGoals({ calories: 3000, protein: 200, carbs: 300, fat: 100 });
       });
 
+      // Verify state was changed
+      expect(result.current.state.theme).toBe('dark');
+
       // Reset state
       act(() => {
         result.current.resetState();
       });
 
+      // State should be reset to defaults
       expect(result.current.state.theme).toBe(DEFAULT_APP_STATE.theme);
       expect(result.current.state.dailyGoals).toEqual(DEFAULT_DAILY_GOALS);
-      expect(localStorage.getItem('keyston_app_state')).toBeNull();
+
+      // After reset, localStorage should contain default preferences (due to useEffect)
+      const stored = JSON.parse(localStorage.getItem('keyston_ui_preferences') || '{}');
+      expect(stored.theme).toBe(DEFAULT_APP_STATE.theme);
     });
   });
 
@@ -275,7 +306,7 @@ describe('AppContext', () => {
   });
 
   describe('state persistence across navigation', () => {
-    it('should maintain state when component remounts', () => {
+    it('should maintain UI preferences (theme) when component remounts', () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
         <AppProvider>{children}</AppProvider>
       );
@@ -288,14 +319,17 @@ describe('AppContext', () => {
         result1.current.updateDailyGoals({ calories: 2800, protein: 190, carbs: 280, fat: 90 });
       });
 
-      const expectedGoals = result1.current.state.dailyGoals;
+      // Theme should be persisted, but health data should not
+      expect(result1.current.state.theme).toBe('dark');
       unmount();
 
       // Second mount (simulating navigation)
       const { result: result2 } = renderHook(() => useApp(), { wrapper });
 
+      // Theme preference should persist
       expect(result2.current.state.theme).toBe('dark');
-      expect(result2.current.state.dailyGoals).toEqual(expectedGoals);
+      // Health data should NOT persist (back to defaults)
+      expect(result2.current.state.dailyGoals).toEqual(DEFAULT_DAILY_GOALS);
     });
   });
 });

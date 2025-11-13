@@ -14,9 +14,20 @@ interface AppContextType {
 }
 
 /**
- * Storage key for persisting state to localStorage
+ * Storage key for persisting UI preferences to localStorage
+ * Note: Only non-health-related preferences (theme, UI state) are stored here.
+ * Health data like dailyGoals and currentDate should be managed via IndexedDB in production.
  */
-const STORAGE_KEY = 'keyston_app_state';
+const STORAGE_KEY = 'keyston_ui_preferences';
+
+/**
+ * Interface for UI preferences stored in localStorage
+ * Only contains non-health-related UI state
+ */
+interface UIPreferences {
+  theme: Theme;
+  isLoading: boolean;
+}
 
 /**
  * App Context for global state management
@@ -24,33 +35,31 @@ const STORAGE_KEY = 'keyston_app_state';
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 /**
- * Load state from localStorage
+ * Load UI preferences from localStorage
+ * Note: dailyGoals and currentDate are NOT persisted to localStorage
+ * as they are health-related data that should use IndexedDB
  */
-const loadStateFromStorage = (): Partial<AppState> => {
+const loadPreferencesFromStorage = (): Partial<UIPreferences> => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-      const parsed = JSON.parse(stored);
-      // Convert date string back to Date object
-      if (parsed.currentDate) {
-        parsed.currentDate = new Date(parsed.currentDate);
-      }
-      return parsed;
+      return JSON.parse(stored);
     }
   } catch (error) {
-    console.error('Failed to load state from storage:', error);
+    console.error('Failed to load preferences from storage:', error);
   }
   return {};
 };
 
 /**
- * Save state to localStorage
+ * Save UI preferences to localStorage
+ * Only saves theme and isLoading (non-health-related preferences)
  */
-const saveStateToStorage = (state: AppState): void => {
+const savePreferencesToStorage = (preferences: UIPreferences): void => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
   } catch (error) {
-    console.error('Failed to save state to storage:', error);
+    console.error('Failed to save preferences to storage:', error);
   }
 };
 
@@ -67,28 +76,32 @@ interface AppProviderProps {
 
 /**
  * App Context Provider Component
- * Manages global application state and persists it to localStorage
+ * Manages global application state.
+ * Only theme and isLoading are persisted to localStorage (UI preferences).
+ * Health-related data (dailyGoals, currentDate) remain in memory and should
+ * be managed via IndexedDB in production features.
  */
 export const AppProvider: React.FC<AppProviderProps> = ({ children, initialState }) => {
-  // Initialize state from localStorage or defaults
+  // Initialize state from localStorage preferences or defaults
   const [state, setState] = useState<AppState>(() => {
-    const storedState = loadStateFromStorage();
+    const storedPreferences = loadPreferencesFromStorage();
     return {
       ...DEFAULT_APP_STATE,
-      ...storedState,
+      // Only apply UI preferences from localStorage
+      ...(storedPreferences.theme && { theme: storedPreferences.theme }),
+      ...(storedPreferences.isLoading !== undefined && { isLoading: storedPreferences.isLoading }),
       ...initialState, // Override with test initial state if provided
     };
   });
 
-  // Track if we should persist to localStorage
-  const [shouldPersist, setShouldPersist] = useState(true);
-
-  // Persist state to localStorage whenever it changes (if persistence is enabled)
+  // Persist only UI preferences to localStorage whenever they change
   useEffect(() => {
-    if (shouldPersist) {
-      saveStateToStorage(state);
-    }
-  }, [state, shouldPersist]);
+    const preferences: UIPreferences = {
+      theme: state.theme,
+      isLoading: state.isLoading,
+    };
+    savePreferencesToStorage(preferences);
+  }, [state.theme, state.isLoading]);
 
   /**
    * Update the current date
@@ -119,14 +132,11 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children, initialState
   };
 
   /**
-   * Reset state to defaults
+   * Reset state to defaults and clear localStorage
    */
   const resetState = (): void => {
-    setShouldPersist(false);
     localStorage.removeItem(STORAGE_KEY);
     setState(DEFAULT_APP_STATE);
-    // Re-enable persistence after reset
-    setTimeout(() => setShouldPersist(true), 0);
   };
 
   const contextValue: AppContextType = {
