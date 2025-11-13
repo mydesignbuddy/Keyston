@@ -76,7 +76,7 @@ export class OpenFoodFactsApiService {
 
     // Check cache first
     const cacheKey = `off_search_${query}_${page}_${pageSize}`;
-    const cached = await ApiCacheService.getCachedSearchResults(cacheKey);
+    const cached = await ApiCacheService.getCachedSearchResults<FoodSearchResult[]>(cacheKey);
     if (cached) {
       return cached;
     }
@@ -124,7 +124,7 @@ export class OpenFoodFactsApiService {
   static async getFoodByBarcode(barcode: string): Promise<FoodSearchResult | null> {
     // Check cache first
     const cacheKey = `off_barcode_${barcode}`;
-    const cached = await ApiCacheService.getCachedBarcodeLookup(cacheKey);
+    const cached = await ApiCacheService.getCachedBarcodeLookup<FoodSearchResult>(cacheKey);
     if (cached) {
       return cached;
     }

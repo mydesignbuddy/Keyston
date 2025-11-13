@@ -82,7 +82,7 @@ export class UsdaApiService {
 
     // Check cache first
     const cacheKey = `usda_search_${query}_${pageNumber}_${pageSize}`;
-    const cached = await ApiCacheService.getCachedSearchResults(cacheKey);
+    const cached = await ApiCacheService.getCachedSearchResults<FoodSearchResult[]>(cacheKey);
     if (cached) {
       return cached;
     }
@@ -154,7 +154,7 @@ export class UsdaApiService {
       const result = this.transformToSearchResult(data);
 
       // Cache result
-      await ApiCacheService.set(cacheKey, result, CACHE_TTL.FOOD_DETAILS);
+      await ApiCacheService.set(cacheKey, result, CACHE_TTL.NUTRITION_DATA);
 
       return result;
     } catch (error) {
