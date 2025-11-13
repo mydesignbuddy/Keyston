@@ -67,9 +67,7 @@ describe('FilesystemService', () => {
     });
 
     it('should return true on platforms with automatic permissions', async () => {
-      (Filesystem.requestPermissions as jest.Mock).mockRejectedValue(
-        new Error('Not supported')
-      );
+      (Filesystem.requestPermissions as jest.Mock).mockRejectedValue(new Error('Not supported'));
 
       const result = await FilesystemService.requestPermissions();
 
@@ -90,9 +88,7 @@ describe('FilesystemService', () => {
     });
 
     it('should return true on platforms with automatic permissions', async () => {
-      (Filesystem.checkPermissions as jest.Mock).mockRejectedValue(
-        new Error('Not supported')
-      );
+      (Filesystem.checkPermissions as jest.Mock).mockRejectedValue(new Error('Not supported'));
 
       const result = await FilesystemService.checkPermissions();
 
@@ -133,13 +129,11 @@ describe('FilesystemService', () => {
     });
 
     it('should throw error when write fails', async () => {
-      (Filesystem.writeFile as jest.Mock).mockRejectedValue(
-        new Error('Write error')
-      );
+      (Filesystem.writeFile as jest.Mock).mockRejectedValue(new Error('Write error'));
 
-      await expect(
-        FilesystemService.writeFile('test.txt', 'Hello World')
-      ).rejects.toThrow('Failed to write file: test.txt');
+      await expect(FilesystemService.writeFile('test.txt', 'Hello World')).rejects.toThrow(
+        'Failed to write file: test.txt'
+      );
     });
   });
 
@@ -211,9 +205,7 @@ describe('FilesystemService', () => {
     });
 
     it('should throw error when delete fails', async () => {
-      (Filesystem.deleteFile as jest.Mock).mockRejectedValue(
-        new Error('Delete error')
-      );
+      (Filesystem.deleteFile as jest.Mock).mockRejectedValue(new Error('Delete error'));
 
       await expect(FilesystemService.deleteFile('test.txt')).rejects.toThrow(
         'Failed to delete file: test.txt'
@@ -365,13 +357,11 @@ describe('FilesystemService', () => {
     });
 
     it('should throw error when writing JSON fails', async () => {
-      (Filesystem.writeFile as jest.Mock).mockRejectedValue(
-        new Error('Write error')
-      );
+      (Filesystem.writeFile as jest.Mock).mockRejectedValue(new Error('Write error'));
 
-      await expect(
-        FilesystemService.writeJSON('data.json', { test: true })
-      ).rejects.toThrow('Failed to write JSON to: data.json');
+      await expect(FilesystemService.writeJSON('data.json', { test: true })).rejects.toThrow(
+        'Failed to write JSON to: data.json'
+      );
     });
   });
 

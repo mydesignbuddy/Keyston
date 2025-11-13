@@ -72,9 +72,7 @@ describe('CameraService', () => {
     });
 
     it('should return false when request fails', async () => {
-      (Camera.requestPermissions as jest.Mock).mockRejectedValue(
-        new Error('Permission error')
-      );
+      (Camera.requestPermissions as jest.Mock).mockRejectedValue(new Error('Permission error'));
 
       const result = await CameraService.requestPermissions();
 
@@ -105,9 +103,7 @@ describe('CameraService', () => {
     });
 
     it('should return false when check fails', async () => {
-      (Camera.checkPermissions as jest.Mock).mockRejectedValue(
-        new Error('Check error')
-      );
+      (Camera.checkPermissions as jest.Mock).mockRejectedValue(new Error('Check error'));
 
       const result = await CameraService.checkPermissions();
 
@@ -183,9 +179,7 @@ describe('CameraService', () => {
         camera: 'denied',
       });
 
-      await expect(CameraService.takePhoto()).rejects.toThrow(
-        'Failed to capture photo'
-      );
+      await expect(CameraService.takePhoto()).rejects.toThrow('Failed to capture photo');
     });
 
     it('should throw error when photo capture fails', async () => {
@@ -194,9 +188,7 @@ describe('CameraService', () => {
       });
       (Camera.getPhoto as jest.Mock).mockRejectedValue(new Error('Camera error'));
 
-      await expect(CameraService.takePhoto()).rejects.toThrow(
-        'Failed to capture photo'
-      );
+      await expect(CameraService.takePhoto()).rejects.toThrow('Failed to capture photo');
     });
   });
 
@@ -240,9 +232,7 @@ describe('CameraService', () => {
     it('should throw error when photo selection fails', async () => {
       (Camera.getPhoto as jest.Mock).mockRejectedValue(new Error('Gallery error'));
 
-      await expect(CameraService.pickPhoto()).rejects.toThrow(
-        'Failed to select photo'
-      );
+      await expect(CameraService.pickPhoto()).rejects.toThrow('Failed to select photo');
     });
   });
 

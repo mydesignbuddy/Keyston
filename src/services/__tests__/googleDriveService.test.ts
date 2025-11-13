@@ -94,13 +94,11 @@ describe('GoogleDriveService', () => {
 
     it('should throw error when initialization fails', async () => {
       (Capacitor.getPlatform as jest.Mock).mockReturnValue('web');
-      (GoogleAuth.initialize as jest.Mock).mockRejectedValue(
-        new Error('Init error')
-      );
+      (GoogleAuth.initialize as jest.Mock).mockRejectedValue(new Error('Init error'));
 
-      await expect(
-        GoogleDriveService.initialize('test-client-id')
-      ).rejects.toThrow('Failed to initialize Google authentication');
+      await expect(GoogleDriveService.initialize('test-client-id')).rejects.toThrow(
+        'Failed to initialize Google authentication'
+      );
     });
   });
 
@@ -121,9 +119,7 @@ describe('GoogleDriveService', () => {
     });
 
     it('should throw error when sign in fails', async () => {
-      (GoogleAuth.signIn as jest.Mock).mockRejectedValue(
-        new Error('Sign in error')
-      );
+      (GoogleAuth.signIn as jest.Mock).mockRejectedValue(new Error('Sign in error'));
 
       await expect(GoogleDriveService.signIn()).rejects.toThrow(
         'Failed to authenticate with Google'
@@ -146,13 +142,9 @@ describe('GoogleDriveService', () => {
     });
 
     it('should throw error when sign out fails', async () => {
-      (GoogleAuth.signOut as jest.Mock).mockRejectedValue(
-        new Error('Sign out error')
-      );
+      (GoogleAuth.signOut as jest.Mock).mockRejectedValue(new Error('Sign out error'));
 
-      await expect(GoogleDriveService.signOut()).rejects.toThrow(
-        'Failed to sign out from Google'
-      );
+      await expect(GoogleDriveService.signOut()).rejects.toThrow('Failed to sign out from Google');
     });
   });
 
@@ -245,10 +237,7 @@ describe('GoogleDriveService', () => {
       };
       (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
 
-      const fileId = await GoogleDriveService.uploadFile(
-        'backup.json',
-        '{"data": "test"}'
-      );
+      const fileId = await GoogleDriveService.uploadFile('backup.json', '{"data": "test"}');
 
       expect(fileId).toBe('file123');
       expect(global.fetch).toHaveBeenCalledWith(
@@ -497,10 +486,7 @@ describe('GoogleDriveService', () => {
       };
       (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
 
-      const fileId = await GoogleDriveService.saveFile(
-        'backup.json',
-        '{"data": "test"}'
-      );
+      const fileId = await GoogleDriveService.saveFile('backup.json', '{"data": "test"}');
 
       expect(fileId).toBe('newfile123');
       expect(global.fetch).toHaveBeenCalledTimes(1);
