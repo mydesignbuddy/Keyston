@@ -13,3 +13,4 @@ export * from './apiCacheService';
 export * from './cameraService';
 export * from './filesystemService';
 export * from './googleDriveService';
+export * from './nutritionApi';
