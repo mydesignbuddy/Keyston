@@ -11,6 +11,6 @@ test('renders Workouts page with header', () => {
 
 test('displays workout features', () => {
   render(<Workouts />);
-  const descriptionText = screen.getByText(/Log your exercises and track your fitness progress/i);
+  const descriptionText = screen.getByText(/Log and track your workouts/i);
   expect(descriptionText).toBeInTheDocument();
 });
