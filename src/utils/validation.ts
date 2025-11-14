@@ -61,10 +61,17 @@ export function isValidDataSource(dataSource: string): dataSource is DataSource 
 }
 
 /**
- * Validate positive number
+ * Validate non-negative number (>= 0)
  */
 export function isPositiveNumber(value: number): boolean {
   return typeof value === 'number' && !isNaN(value) && isFinite(value) && value >= 0;
+}
+
+/**
+ * Validate strictly positive number (> 0)
+ */
+export function isStrictlyPositiveNumber(value: number): boolean {
+  return typeof value === 'number' && !isNaN(value) && isFinite(value) && value > 0;
 }
 
 /**
@@ -202,11 +209,7 @@ export function validateFood(food: Partial<Food>): asserts food is Food {
   }
 
   // Validate default serving info
-  if (
-    food.servingSizeDefault === undefined ||
-    !isPositiveNumber(food.servingSizeDefault) ||
-    food.servingSizeDefault === 0
-  ) {
+  if (food.servingSizeDefault === undefined || !isStrictlyPositiveNumber(food.servingSizeDefault)) {
     throw new ValidationError(
       'Invalid serving size default (must be a positive number)',
       'servingSizeDefault'
@@ -312,4 +315,24 @@ export function sanitizeFood(food: Partial<Food>): Partial<Food> {
     sugarG: typeof food.sugarG === 'number' ? food.sugarG : undefined,
     sodiumMg: typeof food.sodiumMg === 'number' ? food.sodiumMg : undefined,
   };
+}
+
+/**
+ * Handle validation errors consistently
+ * Logs validation errors with field information and re-throws
+ * @param error - The error to handle
+ * @param context - Context string for logging (e.g., 'add food', 'update entry')
+ * @param fallbackMessage - Fallback error message if not a ValidationError
+ */
+export function handleValidationError(
+  error: unknown,
+  context: string,
+  fallbackMessage: string
+): never {
+  if (error instanceof ValidationError) {
+    console.error(`Validation error (${context}):`, error.message, error.field);
+    throw error;
+  }
+  console.error(`Failed to ${context}:`, error);
+  throw new Error(fallbackMessage);
 }

@@ -5,11 +5,13 @@ import {
   isValidMealType,
   isValidDataSource,
   isPositiveNumber,
+  isStrictlyPositiveNumber,
   isNonEmptyString,
   validateFoodDiaryEntry,
   validateFood,
   sanitizeFoodDiaryEntry,
   sanitizeFood,
+  handleValidationError,
 } from '../validation';
 
 describe('Validation Utilities', () => {
@@ -85,6 +87,55 @@ describe('Validation Utilities', () => {
       expect(isPositiveNumber(NaN)).toBe(false);
       expect(isPositiveNumber(Infinity)).toBe(false);
       expect(isPositiveNumber('100' as any)).toBe(false);
+    });
+  });
+
+  describe('isStrictlyPositiveNumber', () => {
+    it('should validate strictly positive numbers', () => {
+      expect(isStrictlyPositiveNumber(1)).toBe(true);
+      expect(isStrictlyPositiveNumber(100.5)).toBe(true);
+      expect(isStrictlyPositiveNumber(0.001)).toBe(true);
+    });
+
+    it('should reject zero, negative numbers, and non-numbers', () => {
+      expect(isStrictlyPositiveNumber(0)).toBe(false);
+      expect(isStrictlyPositiveNumber(-1)).toBe(false);
+      expect(isStrictlyPositiveNumber(NaN)).toBe(false);
+      expect(isStrictlyPositiveNumber(Infinity)).toBe(false);
+      expect(isStrictlyPositiveNumber('100' as any)).toBe(false);
+    });
+  });
+
+  describe('handleValidationError', () => {
+    it('should handle ValidationError', () => {
+      const error = new ValidationError('Invalid field', 'testField');
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      expect(() => handleValidationError(error, 'test operation', 'Fallback message')).toThrow(
+        ValidationError
+      );
+      expect(() => handleValidationError(error, 'test operation', 'Fallback message')).toThrow(
+        'Invalid field'
+      );
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Validation error (test operation):',
+        'Invalid field',
+        'testField'
+      );
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should handle generic errors', () => {
+      const error = new Error('Generic error');
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      expect(() => handleValidationError(error, 'test operation', 'Fallback message')).toThrow(
+        'Fallback message'
+      );
+      expect(consoleSpy).toHaveBeenCalledWith('Failed to test operation:', error);
+
+      consoleSpy.mockRestore();
     });
   });
 
