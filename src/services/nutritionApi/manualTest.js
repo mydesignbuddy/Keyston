@@ -1,9 +1,9 @@
 /**
  * Manual API Testing Script
- * 
+ *
  * This script tests the actual API connections to USDA and Open Food Facts.
  * Run with: node src/services/nutritionApi/manualTest.js
- * 
+ *
  * Note: This uses node-fetch for Node.js environment.
  * In the browser, the services use the native fetch API.
  */
@@ -25,33 +25,33 @@ async function testUsdaApi() {
     // Test search
     console.log('1. Testing search for "apple"...');
     const searchUrl = `${USDA_BASE_URL}/foods/search?api_key=${USDA_API_KEY}&query=apple&pageSize=3`;
-    
+
     const response = await fetch(searchUrl);
-    
+
     if (!response.ok) {
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-    
+
     console.log(`✅ Search successful!`);
     console.log(`   Total hits: ${data.totalHits}`);
     console.log(`   Results returned: ${data.foods.length}`);
-    
+
     if (data.foods.length > 0) {
       const firstFood = data.foods[0];
       console.log(`   First result: ${firstFood.description}`);
       console.log(`   FDC ID: ${firstFood.fdcId}`);
-      
+
       // Test get by ID
       console.log('\n2. Testing get food by ID...');
       const foodUrl = `${USDA_BASE_URL}/food/${firstFood.fdcId}?api_key=${USDA_API_KEY}`;
       const foodResponse = await fetch(foodUrl);
-      
+
       if (!foodResponse.ok) {
         throw new Error(`API error: ${foodResponse.status} ${foodResponse.statusText}`);
       }
-      
+
       const foodData = await foodResponse.json();
       console.log(`✅ Get by ID successful!`);
       console.log(`   Food: ${foodData.description}`);
@@ -78,19 +78,19 @@ async function testOpenFoodFactsApi() {
     // Test search
     console.log('1. Testing search for "nutella"...');
     const searchUrl = `${OFF_BASE_URL}/search?search_terms=nutella&page=1&page_size=3&json=1&fields=code,product_name,brands,nutriments`;
-    
+
     const response = await fetch(searchUrl);
-    
+
     if (!response.ok) {
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-    
+
     console.log(`✅ Search successful!`);
     console.log(`   Total count: ${data.count}`);
     console.log(`   Results returned: ${data.products.length}`);
-    
+
     if (data.products.length > 0) {
       const firstProduct = data.products[0];
       console.log(`   First result: ${firstProduct.product_name || 'Unknown'}`);
@@ -102,18 +102,20 @@ async function testOpenFoodFactsApi() {
     console.log('\n2. Testing barcode lookup (3017620422003 - Nutella)...');
     const barcodeUrl = `${OFF_BASE_URL}/product/3017620422003.json`;
     const barcodeResponse = await fetch(barcodeUrl);
-    
+
     if (!barcodeResponse.ok) {
       throw new Error(`API error: ${barcodeResponse.status} ${barcodeResponse.statusText}`);
     }
-    
+
     const barcodeData = await barcodeResponse.json();
-    
+
     if (barcodeData.status === 1 && barcodeData.product) {
       console.log(`✅ Barcode lookup successful!`);
       console.log(`   Product: ${barcodeData.product.product_name}`);
       console.log(`   Brand: ${barcodeData.product.brands || 'Unknown'}`);
-      console.log(`   Calories (per 100g): ${barcodeData.product.nutriments?.['energy-kcal_100g'] || 'N/A'}`);
+      console.log(
+        `   Calories (per 100g): ${barcodeData.product.nutriments?.['energy-kcal_100g'] || 'N/A'}`
+      );
     } else {
       console.log(`⚠️  Product not found`);
     }
@@ -141,10 +143,16 @@ async function runTests() {
   console.log('╔══════════════════════════════════════════════════════╗');
   console.log('║                   Test Summary                      ║');
   console.log('╠══════════════════════════════════════════════════════╣');
-  console.log(`║  USDA API:           ${usdaPassed ? '✅ PASSED' : '❌ FAILED'}                     ║`);
-  console.log(`║  Open Food Facts:    ${offPassed ? '✅ PASSED' : '❌ FAILED'}                     ║`);
+  console.log(
+    `║  USDA API:           ${usdaPassed ? '✅ PASSED' : '❌ FAILED'}                     ║`
+  );
+  console.log(
+    `║  Open Food Facts:    ${offPassed ? '✅ PASSED' : '❌ FAILED'}                     ║`
+  );
   console.log('╠══════════════════════════════════════════════════════╣');
-  console.log(`║  Overall:            ${usdaPassed && offPassed ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}           ║`);
+  console.log(
+    `║  Overall:            ${usdaPassed && offPassed ? '✅ ALL TESTS PASSED' : '❌ SOME TESTS FAILED'}           ║`
+  );
   console.log('╚══════════════════════════════════════════════════════╝\n');
 
   process.exit(usdaPassed && offPassed ? 0 : 1);

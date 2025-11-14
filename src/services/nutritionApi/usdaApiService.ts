@@ -1,6 +1,13 @@
 import { FoodSearchResult, DataSource } from '../../models';
 import { ApiCacheService } from '../apiCacheService';
 import { CACHE_TTL } from '../../models/ApiCache';
+import {
+  NetworkError,
+  ApiResponseError,
+  NotFoundError,
+  AuthenticationError,
+  RateLimitError,
+} from './errors';
 
 /**
  * USDA FoodData Central API Service
@@ -104,7 +111,17 @@ export class UsdaApiService {
       const response = await fetch(`${USDA_BASE_URL}/foods/search?${params}`);
 
       if (!response.ok) {
-        throw new Error(`USDA API error: ${response.status} ${response.statusText}`);
+        if (response.status === 401 || response.status === 403) {
+          throw new AuthenticationError('Invalid or missing USDA API key');
+        }
+        if (response.status === 429) {
+          throw new RateLimitError('USDA API rate limit exceeded');
+        }
+        throw new ApiResponseError(
+          `USDA API error: ${response.statusText}`,
+          response.status,
+          response.statusText
+        );
       }
 
       const data: UsdaSearchResponse = await response.json();
@@ -117,8 +134,22 @@ export class UsdaApiService {
 
       return results;
     } catch (error) {
+      // Re-throw our custom errors
+      if (
+        error instanceof AuthenticationError ||
+        error instanceof RateLimitError ||
+        error instanceof ApiResponseError
+      ) {
+        throw error;
+      }
+
+      // Handle network errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new NetworkError('Network error while connecting to USDA API', error);
+      }
+
       console.error('USDA API search error:', error);
-      throw new Error('Failed to search USDA food database');
+      throw new NetworkError('Failed to search USDA food database', error as Error);
     }
   }
 
@@ -145,9 +176,19 @@ export class UsdaApiService {
 
       if (!response.ok) {
         if (response.status === 404) {
-          return null;
+          throw new NotFoundError(`Food with FDC ID ${fdcId} not found`, fdcId.toString());
         }
-        throw new Error(`USDA API error: ${response.status} ${response.statusText}`);
+        if (response.status === 401 || response.status === 403) {
+          throw new AuthenticationError('Invalid or missing USDA API key');
+        }
+        if (response.status === 429) {
+          throw new RateLimitError('USDA API rate limit exceeded');
+        }
+        throw new ApiResponseError(
+          `USDA API error: ${response.statusText}`,
+          response.status,
+          response.statusText
+        );
       }
 
       const data: UsdaFood = await response.json();
@@ -158,8 +199,23 @@ export class UsdaApiService {
 
       return result;
     } catch (error) {
+      // Re-throw our custom errors
+      if (
+        error instanceof NotFoundError ||
+        error instanceof AuthenticationError ||
+        error instanceof RateLimitError ||
+        error instanceof ApiResponseError
+      ) {
+        throw error;
+      }
+
+      // Handle network errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new NetworkError('Network error while connecting to USDA API', error);
+      }
+
       console.error('USDA API get food error:', error);
-      throw new Error('Failed to get food from USDA');
+      throw new NetworkError('Failed to get food from USDA', error as Error);
     }
   }
 
