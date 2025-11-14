@@ -16,6 +16,41 @@ import {
  * Keyston Database
  * IndexedDB database using Dexie.js wrapper
  * All user data stored locally - no backend server
+ *
+ * Migration Strategy:
+ * -------------------
+ * This database uses Dexie.js versioning for schema migrations.
+ * When schema changes are needed:
+ *
+ * 1. Increment the version number in the version() call
+ * 2. Add a new version() block with the updated schema
+ * 3. Use Dexie migration hooks for data transformation if needed
+ *
+ * Example Migration Pattern:
+ * ```
+ * this.version(2).stores({
+ *   // Updated schema with new fields or indexes
+ *   foodDiaryEntries: 'id, foodId, entryDate, mealType, [entryDate+mealType], createdAt, newField'
+ * }).upgrade(tx => {
+ *   // Optional: Transform existing data
+ *   return tx.table('foodDiaryEntries').toCollection().modify(entry => {
+ *     entry.newField = 'default value';
+ *   });
+ * });
+ * ```
+ *
+ * Migration Guidelines:
+ * - Always add new versions, never modify existing version blocks
+ * - Test migrations thoroughly with production-like data
+ * - Document breaking changes in version comments
+ * - Consider backward compatibility when possible
+ * - Use .upgrade() callback for data transformations
+ * - Migrations run automatically on database.open()
+ *
+ * Backup Strategy:
+ * - Users can export all data via exportAllData() method
+ * - Optional Google Drive sync provides automatic backup
+ * - Before major migrations, prompt users to create backup
  */
 export class KeystonDatabase extends Dexie {
   // Object stores (tables)

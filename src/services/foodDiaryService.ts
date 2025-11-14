@@ -1,5 +1,6 @@
 import { db } from './database';
 import { FoodDiaryEntry, DailyNutritionTotals } from '../models';
+import { validateFoodDiaryEntry, ValidationError } from '../utils/validation';
 
 /**
  * Food Diary Service
@@ -17,9 +18,16 @@ export class FoodDiaryService {
         createdAt: new Date(),
       };
 
+      // Validate entry before saving
+      validateFoodDiaryEntry(newEntry);
+
       await db.foodDiaryEntries.add(newEntry);
       return newEntry;
     } catch (error) {
+      if (error instanceof ValidationError) {
+        console.error('Validation error:', error.message, error.field);
+        throw error;
+      }
       console.error('Failed to add food diary entry:', error);
       throw new Error('Failed to save food entry');
     }
@@ -85,9 +93,16 @@ export class FoodDiaryService {
         ...updates,
       };
 
+      // Validate updated entry
+      validateFoodDiaryEntry(updatedEntry);
+
       await db.foodDiaryEntries.put(updatedEntry);
       return updatedEntry;
     } catch (error) {
+      if (error instanceof ValidationError) {
+        console.error('Validation error:', error.message, error.field);
+        throw error;
+      }
       console.error('Failed to update entry:', error);
       throw new Error('Failed to update food entry');
     }
