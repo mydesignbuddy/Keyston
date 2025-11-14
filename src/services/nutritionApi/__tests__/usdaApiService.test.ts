@@ -148,15 +148,15 @@ describe('UsdaApiService', () => {
       });
 
       await expect(UsdaApiService.searchFoods('apple')).rejects.toThrow(
-        'Failed to search USDA food database'
+        'USDA API error: Internal Server Error'
       );
     });
 
     it('should handle network errors', async () => {
-      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+      (global.fetch as jest.Mock).mockRejectedValueOnce(new TypeError('fetch failed'));
 
       await expect(UsdaApiService.searchFoods('apple')).rejects.toThrow(
-        'Failed to search USDA food database'
+        'Network error while connecting to USDA API'
       );
     });
 

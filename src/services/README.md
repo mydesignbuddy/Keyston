@@ -9,6 +9,7 @@ This directory contains services for the Keyston application.
 Handles camera operations including photo capture and barcode scanning with proper permission handling.
 
 **Key Features:**
+
 - Check plugin availability
 - Request and check camera permissions
 - Take photos with customizable options
@@ -24,17 +25,17 @@ import { CameraService } from './services';
 if (CameraService.isAvailable()) {
   // Request permissions
   const hasPermission = await CameraService.requestPermissions();
-  
+
   if (hasPermission) {
     // Take a photo
     const photo = await CameraService.takePhoto({
       quality: 90,
       allowEditing: false,
     });
-    
+
     // Take photo for barcode scanning (high quality, base64)
     const barcodePhoto = await CameraService.takePhotoForBarcode();
-    
+
     // Pick from gallery
     const selectedPhoto = await CameraService.pickPhoto();
   }
@@ -48,6 +49,7 @@ if (CameraService.isAvailable()) {
 Handles file operations for local storage with JSON convenience methods.
 
 **Key Features:**
+
 - Check plugin availability
 - Request and check filesystem permissions
 - Read/write files with different encodings
@@ -99,6 +101,7 @@ const uri = await FilesystemService.getUri('photo.jpg');
 Handles Google authentication and Drive operations for encrypted backup.
 
 **Key Features:**
+
 - Google OAuth authentication
 - Upload/download files to user's Google Drive
 - List files in app data folder
@@ -107,6 +110,7 @@ Handles Google authentication and Drive operations for encrypted backup.
 - Save/update files
 
 **Privacy-First Architecture:**
+
 - Uses only user's own Google Drive
 - Limited scope: `drive.file` and `drive.appdata`
 - No server-side storage
@@ -126,39 +130,39 @@ const user = await GoogleDriveService.signIn();
 // Check if authenticated
 if (GoogleDriveService.isAuthenticated()) {
   // Upload a backup file
-  const backupData = JSON.stringify({ 
+  const backupData = JSON.stringify({
     foods: [...],
-    workouts: [...] 
+    workouts: [...]
   });
-  
+
   const fileId = await GoogleDriveService.uploadFile(
     'keyston-backup.json',
     backupData,
     'application/json'
   );
-  
+
   // List all backup files
   const files = await GoogleDriveService.listFiles();
-  
+
   // Find a specific file
   const foundFileId = await GoogleDriveService.findFileByName('keyston-backup.json');
-  
+
   // Download a backup
   if (foundFileId) {
     const content = await GoogleDriveService.downloadFile(foundFileId);
     const restoredData = JSON.parse(content);
   }
-  
+
   // Update existing file (or create new)
   const newFileId = await GoogleDriveService.saveFile(
     'keyston-backup.json',
     backupData,
     foundFileId // optional, deletes old and creates new
   );
-  
+
   // Delete a file
   await GoogleDriveService.deleteFile(fileId);
-  
+
   // Sign out
   await GoogleDriveService.signOut();
 }
@@ -257,39 +261,39 @@ async function backupToGoogleDrive() {
       settings: await db.userSettings.get('settings'),
       timestamp: new Date().toISOString(),
     };
-    
+
     // 2. Stringify data
     const backupContent = JSON.stringify(allData);
-    
+
     // 3. Optional: Encrypt data here
     // const encryptedContent = encrypt(backupContent, userKey);
-    
+
     // 4. Sign in if needed
     if (!GoogleDriveService.isAuthenticated()) {
       await GoogleDriveService.signIn();
     }
-    
+
     // 5. Find existing backup file
-    const existingFileId = await GoogleDriveService.findFileByName(
-      'keyston-backup.json'
-    );
-    
+    const existingFileId = await GoogleDriveService.findFileByName('keyston-backup.json');
+
     // 6. Upload/update backup
     const fileId = await GoogleDriveService.saveFile(
       'keyston-backup.json',
       backupContent,
       existingFileId
     );
-    
+
     // 7. Update sync metadata
     await db.googleDriveSync.put({
       id: 'sync',
       lastSyncAt: new Date(),
       lastSyncFileId: fileId,
       autoSyncEnabled: true,
-      syncSettings: { /* ... */ },
+      syncSettings: {
+        /* ... */
+      },
     });
-    
+
     return { success: true, fileId };
   } catch (error) {
     console.error('Backup failed:', error);
@@ -303,25 +307,25 @@ async function restoreFromGoogleDrive() {
     if (!GoogleDriveService.isAuthenticated()) {
       await GoogleDriveService.signIn();
     }
-    
+
     // 2. Find backup file
     const fileId = await GoogleDriveService.findFileByName('keyston-backup.json');
     if (!fileId) {
       throw new Error('No backup found');
     }
-    
+
     // 3. Download backup
     const backupContent = await GoogleDriveService.downloadFile(fileId);
-    
+
     // 4. Optional: Decrypt data here
     // const decryptedContent = decrypt(backupContent, userKey);
-    
+
     // 5. Parse data
     const restoredData = JSON.parse(backupContent);
-    
+
     // 6. Clear existing data (optional, or merge)
     await db.clearAllData();
-    
+
     // 7. Restore data to IndexedDB
     if (restoredData.foods) {
       await db.foods.bulkPut(restoredData.foods);
@@ -335,7 +339,7 @@ async function restoreFromGoogleDrive() {
     if (restoredData.settings) {
       await db.userSettings.put(restoredData.settings);
     }
-    
+
     return { success: true, timestamp: restoredData.timestamp };
   } catch (error) {
     console.error('Restore failed:', error);
@@ -367,16 +371,19 @@ npm test -- googleDriveService
 ## Security Considerations
 
 ### Camera Service
+
 - Always request permissions before accessing camera
 - Handle permission denials gracefully
 - Be mindful of photo storage and cleanup
 
 ### Filesystem Service
+
 - Use appropriate directories (Data, Documents, etc.)
 - Sanitize file paths to prevent directory traversal
 - Handle file not found errors gracefully
 
 ### Google Drive Service
+
 - Never store API keys in code (use environment variables)
 - Use minimal scopes (`drive.file` and `drive.appdata`)
 - Always sign out when backup/restore is complete

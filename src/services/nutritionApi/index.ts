@@ -7,3 +7,6 @@
 
 export * from './usdaApiService';
 export * from './openFoodFactsApiService';
+export * from './nutritionApiClient';
+export * from './errors';
+export * from './retryHandler';

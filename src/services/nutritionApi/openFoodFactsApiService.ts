@@ -1,5 +1,6 @@
 import { FoodSearchResult, DataSource } from '../../models';
 import { ApiCacheService } from '../apiCacheService';
+import { NetworkError, ApiResponseError, NotFoundError, RateLimitError } from './errors';
 
 /**
  * Open Food Facts API Service
@@ -95,7 +96,14 @@ export class OpenFoodFactsApiService {
       const response = await fetch(`${OFF_BASE_URL}/search?${params}`);
 
       if (!response.ok) {
-        throw new Error(`Open Food Facts API error: ${response.status} ${response.statusText}`);
+        if (response.status === 429) {
+          throw new RateLimitError('Open Food Facts API rate limit exceeded');
+        }
+        throw new ApiResponseError(
+          `Open Food Facts API error: ${response.statusText}`,
+          response.status,
+          response.statusText
+        );
       }
 
       const data: OffSearchResponse = await response.json();
@@ -110,8 +118,18 @@ export class OpenFoodFactsApiService {
 
       return results;
     } catch (error) {
+      // Re-throw our custom errors
+      if (error instanceof RateLimitError || error instanceof ApiResponseError) {
+        throw error;
+      }
+
+      // Handle network errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new NetworkError('Network error while connecting to Open Food Facts', error);
+      }
+
       console.error('Open Food Facts API search error:', error);
-      throw new Error('Failed to search Open Food Facts database');
+      throw new NetworkError('Failed to search Open Food Facts database', error as Error);
     }
   }
 
@@ -134,15 +152,24 @@ export class OpenFoodFactsApiService {
 
       if (!response.ok) {
         if (response.status === 404) {
+          // Return null for backward compatibility
           return null;
         }
-        throw new Error(`Open Food Facts API error: ${response.status} ${response.statusText}`);
+        if (response.status === 429) {
+          throw new RateLimitError('Open Food Facts API rate limit exceeded');
+        }
+        throw new ApiResponseError(
+          `Open Food Facts API error: ${response.statusText}`,
+          response.status,
+          response.statusText
+        );
       }
 
       const data: OffProductResponse = await response.json();
 
       if (data.status === 0 || !data.product) {
-        return null; // Product not found
+        // Return null for backward compatibility
+        return null;
       }
 
       const result = this.transformToSearchResult(data.product);
@@ -152,8 +179,22 @@ export class OpenFoodFactsApiService {
 
       return result;
     } catch (error) {
+      // Re-throw our custom errors
+      if (
+        error instanceof NotFoundError ||
+        error instanceof RateLimitError ||
+        error instanceof ApiResponseError
+      ) {
+        throw error;
+      }
+
+      // Handle network errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new NetworkError('Network error while connecting to Open Food Facts', error);
+      }
+
       console.error('Open Food Facts API barcode lookup error:', error);
-      throw new Error('Failed to lookup barcode in Open Food Facts');
+      throw new NetworkError('Failed to lookup barcode in Open Food Facts', error as Error);
     }
   }
 

@@ -134,15 +134,15 @@ describe('OpenFoodFactsApiService', () => {
       });
 
       await expect(OpenFoodFactsApiService.searchFoods('test')).rejects.toThrow(
-        'Failed to search Open Food Facts database'
+        'Open Food Facts API error: Internal Server Error'
       );
     });
 
     it('should handle network errors', async () => {
-      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+      (global.fetch as jest.Mock).mockRejectedValueOnce(new TypeError('fetch failed'));
 
       await expect(OpenFoodFactsApiService.searchFoods('test')).rejects.toThrow(
-        'Failed to search Open Food Facts database'
+        'Network error while connecting to Open Food Facts'
       );
     });
 

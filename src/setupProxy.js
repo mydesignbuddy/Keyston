@@ -1,9 +1,9 @@
 /**
  * HTTP Proxy Middleware Configuration for Create React App
- * 
+ *
  * This proxy configuration is ONLY used in development mode
  * to avoid CORS issues when making API calls from the browser.
- * 
+ *
  * In production (native mobile apps), API calls are made directly
  * without a proxy since CORS doesn't apply to native apps.
  */
