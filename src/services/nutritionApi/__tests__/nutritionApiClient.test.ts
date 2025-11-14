@@ -1,7 +1,7 @@
 import { NutritionApiClient } from '../nutritionApiClient';
 import { UsdaApiService } from '../usdaApiService';
 import { OpenFoodFactsApiService } from '../openFoodFactsApiService';
-import { NetworkError, NutritionApiError, NotFoundError } from '../errors';
+import { NetworkError, ValidationError } from '../errors';
 import { FoodSearchResult } from '../../../models';
 
 // Mock the API services
@@ -95,7 +95,7 @@ describe('NutritionApiClient', () => {
     });
 
     it('should throw error for empty query', async () => {
-      await expect(NutritionApiClient.searchFoods('')).rejects.toThrow(NutritionApiError);
+      await expect(NutritionApiClient.searchFoods('')).rejects.toThrow(ValidationError);
       await expect(NutritionApiClient.searchFoods('')).rejects.toThrow(
         'Search query cannot be empty'
       );
@@ -225,9 +225,7 @@ describe('NutritionApiClient', () => {
     });
 
     it('should return null if barcode not found', async () => {
-      (OpenFoodFactsApiService.getFoodByBarcode as jest.Mock).mockRejectedValue(
-        new NotFoundError('Not found', '123456789')
-      );
+      (OpenFoodFactsApiService.getFoodByBarcode as jest.Mock).mockResolvedValue(null);
 
       const promise = NutritionApiClient.getFoodByBarcode('123456789');
 
@@ -237,7 +235,7 @@ describe('NutritionApiClient', () => {
     });
 
     it('should throw error for empty barcode', async () => {
-      await expect(NutritionApiClient.getFoodByBarcode('')).rejects.toThrow(NutritionApiError);
+      await expect(NutritionApiClient.getFoodByBarcode('')).rejects.toThrow(ValidationError);
       await expect(NutritionApiClient.getFoodByBarcode('')).rejects.toThrow(
         'Barcode cannot be empty'
       );
@@ -298,7 +296,7 @@ describe('NutritionApiClient', () => {
 
     it('should throw error for invalid USDA ID', async () => {
       await expect(NutritionApiClient.getFoodById('invalid', 'usda')).rejects.toThrow(
-        NutritionApiError
+        ValidationError
       );
       await expect(NutritionApiClient.getFoodById('invalid', 'usda')).rejects.toThrow(
         'Invalid USDA FDC ID'
@@ -306,9 +304,7 @@ describe('NutritionApiClient', () => {
     });
 
     it('should return null if food not found', async () => {
-      (UsdaApiService.getFoodById as jest.Mock).mockRejectedValue(
-        new NotFoundError('Not found', '999999')
-      );
+      (UsdaApiService.getFoodById as jest.Mock).mockResolvedValue(null);
 
       const promise = NutritionApiClient.getFoodById('999999', 'usda');
 
@@ -318,7 +314,7 @@ describe('NutritionApiClient', () => {
     });
 
     it('should throw error for empty ID', async () => {
-      await expect(NutritionApiClient.getFoodById('', 'usda')).rejects.toThrow(NutritionApiError);
+      await expect(NutritionApiClient.getFoodById('', 'usda')).rejects.toThrow(ValidationError);
       await expect(NutritionApiClient.getFoodById('', 'usda')).rejects.toThrow(
         'Food ID cannot be empty'
       );

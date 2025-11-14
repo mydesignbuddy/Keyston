@@ -295,9 +295,8 @@ describe('UsdaApiService', () => {
         statusText: 'Not Found',
       });
 
-      await expect(UsdaApiService.getFoodById(999999)).rejects.toThrow(
-        'Food with FDC ID 999999 not found'
-      );
+      const result = await UsdaApiService.getFoodById(999999);
+      expect(result).toBeNull();
     });
 
     it('should use cache for repeated requests', async () => {

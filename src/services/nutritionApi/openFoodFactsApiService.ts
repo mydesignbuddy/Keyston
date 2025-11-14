@@ -152,7 +152,8 @@ export class OpenFoodFactsApiService {
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new NotFoundError(`Product with barcode ${barcode} not found`, barcode);
+          // Return null for backward compatibility
+          return null;
         }
         if (response.status === 429) {
           throw new RateLimitError('Open Food Facts API rate limit exceeded');
@@ -167,7 +168,8 @@ export class OpenFoodFactsApiService {
       const data: OffProductResponse = await response.json();
 
       if (data.status === 0 || !data.product) {
-        throw new NotFoundError(`Product with barcode ${barcode} not found`, barcode);
+        // Return null for backward compatibility
+        return null;
       }
 
       const result = this.transformToSearchResult(data.product);

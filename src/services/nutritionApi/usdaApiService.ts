@@ -176,7 +176,8 @@ export class UsdaApiService {
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new NotFoundError(`Food with FDC ID ${fdcId} not found`, fdcId.toString());
+          // Return null for backward compatibility
+          return null;
         }
         if (response.status === 401 || response.status === 403) {
           throw new AuthenticationError('Invalid or missing USDA API key');

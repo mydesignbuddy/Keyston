@@ -217,9 +217,8 @@ describe('OpenFoodFactsApiService', () => {
         json: async () => mockResponse,
       });
 
-      await expect(
-        OpenFoodFactsApiService.getFoodByBarcode('0000000000000')
-      ).rejects.toThrow('Product with barcode 0000000000000 not found');
+      const result = await OpenFoodFactsApiService.getFoodByBarcode('0000000000000');
+      expect(result).toBeNull();
     });
 
     it('should return null for 404 errors', async () => {
@@ -229,9 +228,8 @@ describe('OpenFoodFactsApiService', () => {
         statusText: 'Not Found',
       });
 
-      await expect(
-        OpenFoodFactsApiService.getFoodByBarcode('9999999999999')
-      ).rejects.toThrow('Product with barcode 9999999999999 not found');
+      const result = await OpenFoodFactsApiService.getFoodByBarcode('9999999999999');
+      expect(result).toBeNull();
     });
 
     it('should use cache for repeated barcode lookups', async () => {

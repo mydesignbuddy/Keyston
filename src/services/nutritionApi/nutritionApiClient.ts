@@ -16,7 +16,7 @@ import { FoodSearchResult } from '../../models';
 import { UsdaApiService } from './usdaApiService';
 import { OpenFoodFactsApiService } from './openFoodFactsApiService';
 import { withRetry, DEFAULT_RETRY_CONFIG, RetryConfig } from './retryHandler';
-import { NutritionApiError, NetworkError, NotFoundError, getUserFriendlyMessage } from './errors';
+import { NetworkError, ValidationError, getUserFriendlyMessage } from './errors';
 
 /**
  * Nutrition API data source
@@ -56,7 +56,7 @@ export class NutritionApiClient {
     } = options;
 
     if (!query || query.trim().length === 0) {
-      throw new NutritionApiError('Search query cannot be empty', 'VALIDATION_ERROR');
+      throw new ValidationError('Search query cannot be empty', { query: 'Required' });
     }
 
     const promises: Promise<FoodSearchResult[]>[] = [];
@@ -123,15 +123,12 @@ export class NutritionApiClient {
     retryConfig: RetryConfig = DEFAULT_RETRY_CONFIG
   ): Promise<FoodSearchResult | null> {
     if (!barcode || barcode.trim().length === 0) {
-      throw new NutritionApiError('Barcode cannot be empty', 'VALIDATION_ERROR');
+      throw new ValidationError('Barcode cannot be empty', { barcode: 'Required' });
     }
 
     try {
       return await withRetry(() => OpenFoodFactsApiService.getFoodByBarcode(barcode), retryConfig);
     } catch (error) {
-      if (error instanceof NotFoundError) {
-        return null;
-      }
       console.error('[NutritionApiClient] Barcode lookup failed:', error);
       throw error;
     }
@@ -150,14 +147,14 @@ export class NutritionApiClient {
     retryConfig: RetryConfig = DEFAULT_RETRY_CONFIG
   ): Promise<FoodSearchResult | null> {
     if (!id || id.trim().length === 0) {
-      throw new NutritionApiError('Food ID cannot be empty', 'VALIDATION_ERROR');
+      throw new ValidationError('Food ID cannot be empty', { id: 'Required' });
     }
 
     try {
       if (source === 'usda') {
         const fdcId = parseInt(id, 10);
         if (isNaN(fdcId)) {
-          throw new NutritionApiError('Invalid USDA FDC ID', 'VALIDATION_ERROR');
+          throw new ValidationError('Invalid USDA FDC ID', { id: 'Must be a number' });
         }
         return await withRetry(() => UsdaApiService.getFoodById(fdcId), retryConfig);
       } else {
@@ -165,9 +162,6 @@ export class NutritionApiClient {
         return await withRetry(() => OpenFoodFactsApiService.getFoodByBarcode(id), retryConfig);
       }
     } catch (error) {
-      if (error instanceof NotFoundError) {
-        return null;
-      }
       console.error('[NutritionApiClient] Get food by ID failed:', error);
       throw error;
     }
