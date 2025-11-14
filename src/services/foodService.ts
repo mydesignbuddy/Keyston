@@ -1,5 +1,6 @@
 import { db } from './database';
 import { Food, FoodSearchResult } from '../models';
+import { validateFood, handleValidationError } from '../utils/validation';
 
 /**
  * Food Service
@@ -17,11 +18,13 @@ export class FoodService {
         createdAt: new Date(),
       };
 
+      // Validate food before saving
+      validateFood(newFood);
+
       await db.foods.add(newFood);
       return newFood;
     } catch (error) {
-      console.error('Failed to add food:', error);
-      throw new Error('Failed to save food');
+      handleValidationError(error, 'add food', 'Failed to save food');
     }
   }
 
@@ -87,11 +90,13 @@ export class FoodService {
         ...updates,
       };
 
+      // Validate updated food
+      validateFood(updatedFood);
+
       await db.foods.put(updatedFood);
       return updatedFood;
     } catch (error) {
-      console.error('Failed to update food:', error);
-      throw new Error('Failed to update food');
+      handleValidationError(error, 'update food', 'Failed to update food');
     }
   }
 

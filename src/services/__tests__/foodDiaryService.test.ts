@@ -1,6 +1,12 @@
 import { db } from '../database';
 import { FoodDiaryService } from '../foodDiaryService';
 
+// Helper function to generate valid test UUIDs
+const generateTestUUID = (suffix: string): string => {
+  const base = '00000000-0000-4000-8000-000000000';
+  return base + suffix.padStart(3, '0');
+};
+
 describe('FoodDiaryService', () => {
   beforeEach(async () => {
     await db.delete();
@@ -14,7 +20,7 @@ describe('FoodDiaryService', () => {
   describe('addEntry', () => {
     it('should add a new food diary entry', async () => {
       const entry = await FoodDiaryService.addEntry({
-        foodId: 'food1',
+        foodId: generateTestUUID('001'),
         entryDate: '2024-01-15',
         mealType: 'breakfast',
         servingSize: 150,
@@ -26,14 +32,14 @@ describe('FoodDiaryService', () => {
       });
 
       expect(entry.id).toBeDefined();
-      expect(entry.foodId).toBe('food1');
+      expect(entry.foodId).toBe(generateTestUUID('001'));
       expect(entry.mealType).toBe('breakfast');
       expect(entry.createdAt).toBeInstanceOf(Date);
     });
 
     it('should generate unique IDs', async () => {
       const entry1 = await FoodDiaryService.addEntry({
-        foodId: 'food1',
+        foodId: generateTestUUID('001'),
         entryDate: '2024-01-15',
         mealType: 'breakfast',
         servingSize: 100,
@@ -45,7 +51,7 @@ describe('FoodDiaryService', () => {
       });
 
       const entry2 = await FoodDiaryService.addEntry({
-        foodId: 'food2',
+        foodId: generateTestUUID('002'),
         entryDate: '2024-01-15',
         mealType: 'lunch',
         servingSize: 200,
@@ -63,7 +69,7 @@ describe('FoodDiaryService', () => {
   describe('getEntriesForDate', () => {
     beforeEach(async () => {
       await FoodDiaryService.addEntry({
-        foodId: 'food1',
+        foodId: generateTestUUID('001'),
         entryDate: '2024-01-15',
         mealType: 'breakfast',
         servingSize: 100,
@@ -75,7 +81,7 @@ describe('FoodDiaryService', () => {
       });
 
       await FoodDiaryService.addEntry({
-        foodId: 'food2',
+        foodId: generateTestUUID('002'),
         entryDate: '2024-01-15',
         mealType: 'lunch',
         servingSize: 150,
@@ -87,7 +93,7 @@ describe('FoodDiaryService', () => {
       });
 
       await FoodDiaryService.addEntry({
-        foodId: 'food3',
+        foodId: generateTestUUID('003'),
         entryDate: '2024-01-16',
         mealType: 'breakfast',
         servingSize: 120,
@@ -124,7 +130,7 @@ describe('FoodDiaryService', () => {
   describe('getEntriesByMeal', () => {
     beforeEach(async () => {
       await FoodDiaryService.addEntry({
-        foodId: 'food1',
+        foodId: generateTestUUID('001'),
         entryDate: '2024-01-15',
         mealType: 'breakfast',
         servingSize: 100,
@@ -136,7 +142,7 @@ describe('FoodDiaryService', () => {
       });
 
       await FoodDiaryService.addEntry({
-        foodId: 'food2',
+        foodId: generateTestUUID('002'),
         entryDate: '2024-01-15',
         mealType: 'lunch',
         servingSize: 150,
@@ -159,7 +165,7 @@ describe('FoodDiaryService', () => {
   describe('updateEntry', () => {
     it('should update an entry', async () => {
       const entry = await FoodDiaryService.addEntry({
-        foodId: 'food1',
+        foodId: generateTestUUID('001'),
         entryDate: '2024-01-15',
         mealType: 'breakfast',
         servingSize: 100,
@@ -190,7 +196,7 @@ describe('FoodDiaryService', () => {
   describe('deleteEntry', () => {
     it('should delete an entry', async () => {
       const entry = await FoodDiaryService.addEntry({
-        foodId: 'food1',
+        foodId: generateTestUUID('001'),
         entryDate: '2024-01-15',
         mealType: 'breakfast',
         servingSize: 100,
@@ -211,7 +217,7 @@ describe('FoodDiaryService', () => {
   describe('calculateDailyTotals', () => {
     beforeEach(async () => {
       await FoodDiaryService.addEntry({
-        foodId: 'food1',
+        foodId: generateTestUUID('001'),
         entryDate: '2024-01-15',
         mealType: 'breakfast',
         servingSize: 100,
@@ -226,7 +232,7 @@ describe('FoodDiaryService', () => {
       });
 
       await FoodDiaryService.addEntry({
-        foodId: 'food2',
+        foodId: generateTestUUID('002'),
         entryDate: '2024-01-15',
         mealType: 'lunch',
         servingSize: 150,
@@ -266,7 +272,7 @@ describe('FoodDiaryService', () => {
   describe('getEntriesInRange', () => {
     beforeEach(async () => {
       await FoodDiaryService.addEntry({
-        foodId: 'food1',
+        foodId: generateTestUUID('001'),
         entryDate: '2024-01-15',
         mealType: 'breakfast',
         servingSize: 100,
@@ -278,7 +284,7 @@ describe('FoodDiaryService', () => {
       });
 
       await FoodDiaryService.addEntry({
-        foodId: 'food2',
+        foodId: generateTestUUID('002'),
         entryDate: '2024-01-16',
         mealType: 'lunch',
         servingSize: 150,
@@ -290,7 +296,7 @@ describe('FoodDiaryService', () => {
       });
 
       await FoodDiaryService.addEntry({
-        foodId: 'food3',
+        foodId: generateTestUUID('003'),
         entryDate: '2024-01-18',
         mealType: 'dinner',
         servingSize: 200,
