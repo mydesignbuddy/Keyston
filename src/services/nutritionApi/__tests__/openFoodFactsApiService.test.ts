@@ -134,15 +134,15 @@ describe('OpenFoodFactsApiService', () => {
       });
 
       await expect(OpenFoodFactsApiService.searchFoods('test')).rejects.toThrow(
-        'Failed to search Open Food Facts database'
+        'Open Food Facts API error: Internal Server Error'
       );
     });
 
     it('should handle network errors', async () => {
-      (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
+      (global.fetch as jest.Mock).mockRejectedValueOnce(new TypeError('fetch failed'));
 
       await expect(OpenFoodFactsApiService.searchFoods('test')).rejects.toThrow(
-        'Failed to search Open Food Facts database'
+        'Network error while connecting to Open Food Facts'
       );
     });
 
@@ -217,8 +217,9 @@ describe('OpenFoodFactsApiService', () => {
         json: async () => mockResponse,
       });
 
-      const result = await OpenFoodFactsApiService.getFoodByBarcode('0000000000000');
-      expect(result).toBeNull();
+      await expect(
+        OpenFoodFactsApiService.getFoodByBarcode('0000000000000')
+      ).rejects.toThrow('Product with barcode 0000000000000 not found');
     });
 
     it('should return null for 404 errors', async () => {
@@ -228,8 +229,9 @@ describe('OpenFoodFactsApiService', () => {
         statusText: 'Not Found',
       });
 
-      const result = await OpenFoodFactsApiService.getFoodByBarcode('9999999999999');
-      expect(result).toBeNull();
+      await expect(
+        OpenFoodFactsApiService.getFoodByBarcode('9999999999999')
+      ).rejects.toThrow('Product with barcode 9999999999999 not found');
     });
 
     it('should use cache for repeated barcode lookups', async () => {
