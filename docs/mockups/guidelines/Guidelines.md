@@ -3,7 +3,7 @@
 
 ## General Guidelines
 - Use Ionic React components for all UI (IonButton, IonCard, IonInput, IonToolbar, IonModal, etc).
-- Match layouts and structure to Figma mockups, but prefer Ionic’s responsive grid and flex utilities.
+- Use Figma mockups as visual design intent only; all layouts and structure must be implemented using Ionic components and utilities from the start.
 - Use Keyston theme colors:
   - Primary: #504ae2
   - Secondary: #4a90e2
