@@ -275,7 +275,6 @@ export function validateFood(food: Partial<Food>): asserts food is Food {
 export function sanitizeFoodDiaryEntry(entry: Partial<FoodDiaryEntry>): Partial<FoodDiaryEntry> {
   return {
     ...entry,
-    name: entry.servingUnit?.trim(),
     servingUnit: entry.servingUnit?.trim(),
     // Ensure numeric values are actually numbers
     servingSize: typeof entry.servingSize === 'number' ? entry.servingSize : undefined,
