@@ -18,7 +18,7 @@ Successfully implemented a comprehensive design system for Keyston, establishing
 | Theme switching works | ✅ Complete | Light, dark, and system modes with automatic switching and persistence |
 | Ionic components are styled consistently | ✅ Complete | All Ionic components inherit design system tokens automatically |
 | Design system documented | ✅ Complete | Comprehensive guide in `docs/DESIGN_SYSTEM.md` with examples |
-| UI implementation follows Guidelines.md | ✅ Required | All screens/components must follow [`docs/mockups/guidelines/Guidelines.md`](./mockups/guidelines/Guidelines.md) and use Figma code exports from [`docs/mockups/`](./mockups/) |
+| UI implementation follows Guidelines.md | 🕗 In Progress | Mockup components currently use Radix UI and Tailwind; refactor to Ionic components required for full compliance with [`docs/mockups/guidelines/Guidelines.md`](./mockups/guidelines/Guidelines.md) |
 
 ---
 
